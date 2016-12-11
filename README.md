@@ -8,6 +8,22 @@
 
 * WARNING : For now, some directories are empty and contains a .gitignore file, but this will change in the future. Keep your version up to date.
 
+***********************
+To compile :
+
+	$ make
+	
+***********************
+To run :
+
+	$ ./bin/runner
+	
+***********************
+TO clean :
+
+	$ make clean
+
+***********************
 
 Sebastien Coll
 

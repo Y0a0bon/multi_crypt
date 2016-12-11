@@ -2,7 +2,7 @@
 #define DEF_RSA_algorithm
 
 #include <string>
-#include "../include/RSA_key.h"
+#include "RSA_key.h"
 
 class RSA_algorithm{
 	
@@ -13,8 +13,8 @@ class RSA_algorithm{
 	RSA_algorithm(std::string i_seq, RSA_key rKey);
 	
 	// Encode and decode one block with RSA
-	unsigned long encode_with_rsa(int seq);
-	unsigned long decode_with_rsa(int cipher);
+	unsigned long encode_with_rsa(unsigned long seq);
+	unsigned long decode_with_rsa(unsigned long cipher);
 	
 	// Encode and decode an entire string
 	void encode_rsa_multiple(std::string seq);
@@ -27,7 +27,7 @@ class RSA_algorithm{
 	void set_cipher(std::string cipher);
 	RSA_key get_pk() const;
 	
-	int fast_exp(int blck);
+	unsigned long fast_exp(unsigned long blck);
 	
 	private :
 	

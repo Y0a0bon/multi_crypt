@@ -1,3 +1,6 @@
+## Source:
+## https://github.com/github/gitignore/blob/master/C%2B%2B.gitignore
+
 # Ignore the build and lib directories
 build/*
 lib/*

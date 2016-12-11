@@ -1,4 +1,4 @@
-#include "../include/RSA_algorithm.h"
+#include "RSA_algorithm.h"
 
 using namespace std;
 
@@ -17,21 +17,27 @@ using namespace std;
 		
 	}
 
-
+	
 	// Encode and decode one block with RSA
-	unsigned long RSA_algorithm::encode_with_rsa(int message){
+	unsigned long RSA_algorithm::encode_with_rsa(unsigned long seq){
 		
+		unsigned long c = 0;
+		c = RSA_algorithm::fast_exp(seq);
 		
-		return 0;
+		return c;
 	}
-	unsigned long RSA_algorithm::decode_with_rsa(int cipher){
-		
+	unsigned long RSA_algorithm::decode_with_rsa(unsigned long cipher){
+		// TODO
 		return 0;
 	}
 
 	// Encode and decode an entire string and put it in message/cipher
-	void RSA_algorithm::encode_rsa_multiple(std::string message){}
-	void RSA_algorithm::decode_rsa_multiple(std::string cipher){}
+	void RSA_algorithm::encode_rsa_multiple(std::string message){
+		// TODO
+	}
+	void RSA_algorithm::decode_rsa_multiple(std::string cipher){
+		// TODO
+	}
 
 	// Get() and Set()
 	std::string RSA_algorithm::get_seq() const{
@@ -50,9 +56,12 @@ using namespace std;
 		m_cipher = cipher;
 	}
 
-
-	int RSA_algorithm::fast_exp(int blck){
-		int c = 1;
+	/**
+	 * Function fast_exp()
+	 * Fast exponentiation
+	 **/
+	unsigned long RSA_algorithm::fast_exp(unsigned long blck){
+		unsigned long c = 1;
 		unsigned long e_sv = m_rKey.get_exponent();
 		while(e_sv > 0){
 			if(e_sv % 2 == 0)
