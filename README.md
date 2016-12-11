@@ -19,7 +19,7 @@ To run :
 	$ ./bin/runner
 	
 ***********************
-TO clean :
+To clean :
 
 	$ make clean
 
