@@ -1,4 +1,4 @@
-#include "RSA_key.h"
+#include "../include/RSA_key.h"
 
 using namespace std;
 
@@ -13,11 +13,11 @@ using namespace std;
 	}
 
 	// Get & Set
-	unsigned long get_n() const{
+	unsigned long RSA_key::get_n() const{
 		return m_n;
 	}
 	
-	unsigned long get_exponent() const{
+	unsigned long RSA_key::get_exponent() const{
 		return m_exponent;
 	}
 	

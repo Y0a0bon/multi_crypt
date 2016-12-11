@@ -1,4 +1,4 @@
-#include "RSA_algorithm.h"
+#include "../include/RSA_algorithm.h"
 
 using namespace std;
 
@@ -10,8 +10,8 @@ using namespace std;
 	}*/
 	
 	
-	RSA_algorithm::RSA_algorithm(std::string i_seq, unsigned long p, unsigned long q, unsigned long exponent): 
-	m_seq(seq), m_rKey(p, q, exponent)
+	RSA_algorithm::RSA_algorithm(std::string seq, RSA_key rKey): 
+	m_seq(seq), m_rKey(rKey)
 	{
 		
 		
@@ -42,18 +42,15 @@ using namespace std;
 		return m_cipher;
 	}
 
-	void RSA_algorithm::set_seq(std::string new_message){
-		m_seq = new_message;
+	void RSA_algorithm::set_seq(std::string seq){
+		m_seq = seq;
 	}
 
-	void set_cipher(std::string new_cipher){
-		m_cipher = new_cipher;
+	void RSA_algorithm::set_cipher(std::string cipher){
+		m_cipher = cipher;
 	}
 
-	
-	
-	
-	
+
 	int RSA_algorithm::fast_exp(int blck){
 		int c = 1;
 		unsigned long e_sv = m_rKey.get_exponent();
