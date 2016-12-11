@@ -1,51 +1,27 @@
-#include "RSA_algorithm.h"
+#include "RSA_key.h"
 
 using namespace std;
 
-
 	// Constructor
-	/*RSA_algorithm(std::string i_seq){
-		
-		
+	/*RSA_key::RSA_key(){
+	
 	}*/
-	
-	
-	RSA_algorithm::RSA_algorithm(std::string i_seq, unsigned long p, unsigned long q, unsigned long exponent): 
-	m_seq(seq), m_rKey(p, q, exponent)
+	RSA_key::RSA_key(unsigned long p, unsigned long q, unsigned long exponent) :
+	m_p(p), m_q(q), m_exponent(exponent), m_n(p*q), m_d(0)
 	{
 		
-		
 	}
 
-
-	// Encode and decode one block with RSA
-	unsigned long RSA_algorithm::encode_with_rsa(int message){
-		
-		
-		return 0;
+	// Get & Set
+	unsigned long get_n() const{
+		return m_n;
 	}
-	unsigned long RSA_algorithm::decode_with_rsa(int cipher){
-		
-		return 0;
+	
+	unsigned long get_exponent() const{
+		return m_exponent;
 	}
-
-	// Encode and decode an entire string and put it in message/cipher
-	void RSA_algorithm::encode_rsa_multiple(std::string message){}
-	void RSA_algorithm::decode_rsa_multiple(std::string cipher){}
-
-	// Get() and Set()
-	std::string RSA_algorithm::get_message() const{
-		return message;
-	}
-
-	std::string RSA_algorithm::get_cipher() const{
-		return cipher;
-	}
-
-	void RSA_algorithm::set_message(std::string new_message){
-		message = new_message;
-	}
-
-	void set_cipher(std::string new_cipher){
-		cipher = new_cipher;
+	
+	// Phi
+	unsigned long RSA_key::get_phi(){
+		return (m_p-1) * (m_q-1);
 	}

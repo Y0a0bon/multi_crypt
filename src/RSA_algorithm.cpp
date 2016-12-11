@@ -34,18 +34,38 @@ using namespace std;
 	void RSA_algorithm::decode_rsa_multiple(std::string cipher){}
 
 	// Get() and Set()
-	std::string RSA_algorithm::get_message() const{
-		return message;
+	std::string RSA_algorithm::get_seq() const{
+		return m_seq;
 	}
 
 	std::string RSA_algorithm::get_cipher() const{
-		return cipher;
+		return m_cipher;
 	}
 
-	void RSA_algorithm::set_message(std::string new_message){
-		message = new_message;
+	void RSA_algorithm::set_seq(std::string new_message){
+		m_seq = new_message;
 	}
 
 	void set_cipher(std::string new_cipher){
-		cipher = new_cipher;
+		m_cipher = new_cipher;
 	}
+
+	
+	
+	
+	
+	int RSA_algorithm::fast_exp(int blck){
+		int c = 1;
+		unsigned long e_sv = m_rKey.get_exponent();
+		while(e_sv > 0){
+			if(e_sv % 2 == 0)
+				e_sv /= 2;
+			else{
+				c = (c * blck) % m_rKey.get_n();
+				e_sv = (e_sv - 1) / 2;
+			}
+			blck = (blck * blck) % m_rKey.get_n();
+		}
+		return c;
+	}
+		

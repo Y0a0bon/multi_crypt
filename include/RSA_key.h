@@ -13,9 +13,11 @@ class RSA_key{
 	
 	// Get & Set
 	unsigned long get_n() const;
-	unsigned long get exponent() const;
+	unsigned long get_exponent() const;
 	
 	private :
+	
+	unsigned long get_d() const;
 	
 	unsigned long m_p;
 	unsigned long m_q;

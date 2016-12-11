@@ -26,6 +26,8 @@ class RSA_algorithm{
 	void set_cipher(std::string cipher);
 	RSA_key get_pk() const;
 	
+	int fast_exp(int blck);
+	
 	private :
 	
 	RSA_key m_rKey;
