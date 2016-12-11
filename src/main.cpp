@@ -1,12 +1,14 @@
 #include <iostream>
 
-#include "RSA.algorithm.h"
-#include "RSA_key.h"
+#include "../include/RSA_algorithm.h"
+#include "../include/RSA_key.h"
 
-using namespace std;
 
 int main()
 {
-
+	
+	std::string s = "hello";
+	RSA_key rk(44654654, 4564785, 4561);
+	RSA_algorithm ralg(s, rk);
     return 0;
 }

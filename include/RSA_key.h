@@ -25,6 +25,6 @@ class RSA_key{
 	unsigned long m_exponent;
 	unsigned long m_d;
 	
-}
+};
 
 #endif

@@ -2,6 +2,7 @@
 #define DEF_RSA_algorithm
 
 #include <string>
+#include "../include/RSA_key.h"
 
 class RSA_algorithm{
 	
@@ -35,6 +36,6 @@ class RSA_algorithm{
 	std::string m_cipher;
 	
 	
-}
+};
 
 #endif
