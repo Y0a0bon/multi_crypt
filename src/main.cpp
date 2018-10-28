@@ -1,13 +1,32 @@
 #include <iostream>
 #include <string>
 
-#include "RSA_algorithm.h"
-#include "RSA_key.h"
+#include "RSA_algorithm.hpp"
+#include "RSA_key.hpp"
+#include "AESEncryptor.hpp"
 
+int test_AES();
+int test_RSA();
 
 int main()
 {
 	
+	test_AES();
+
+	return 0;
+}
+
+int test_AES()
+{
+	unsigned char *test = new unsigned char[3];
+	AESEncryptor *aes_enc = new AESEncryptor(test, 3);
+	int three = aes_enc->getThree();
+	std::cout << "Three : " << three << std::endl;
+	return 0;
+}
+
+int test_RSA()
+{
 	std::string str = "hello";
 	unsigned long seq = 41245;
 	unsigned long cipher = 0;
