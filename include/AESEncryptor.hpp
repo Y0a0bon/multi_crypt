@@ -2,6 +2,10 @@
 #define DEF_AES_ENCRYPTOR
 
 #include <fstream>
+#include <array>
+
+#define ARRAY_SIZE 16
+#define BLOCK_SIZE 128
 
 class AESEncryptor
 {
@@ -12,8 +16,8 @@ class AESEncryptor
 	AESEncryptor(unsigned char *t_key, unsigned int t_keySize);
 
 	// Methods
-	void subBytes();
-	void shiftRows();
+	int subBytes(std::array<unsigned char, ARRAY_SIZE> &inputVector);
+	int shiftRows(std::array<unsigned char, ARRAY_SIZE> &inputVector);
 	void mixColumns();
 	void addRoundKey();
 

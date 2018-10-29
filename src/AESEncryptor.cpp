@@ -1,7 +1,9 @@
 // AESEncruptor.cpp
 
 #include <cstring>
+#include <deque>
 #include "AESEncryptor.hpp"
+#include "AESTools.hpp"
 
 
 	// Constructor
@@ -11,13 +13,32 @@
 		m_keySize = t_keySize;
 	}
 
-	void AESEncryptor::subBytes(){
-		
-
+	// SubBytes
+	// Y_i = Sbox(X_i)
+	int AESEncryptor::subBytes(std::array<unsigned char, ARRAY_SIZE> &inputVector){
+		if (inputVector.empty())
+			return 1;
+		for (int i = 0 ; i < inputVector.size(); i++){
+			inputVector[i] = sbox[inputVector[i]];
+		}
+		return 0;
 	}
 
-	void AESEncryptor::shiftRows(){
-
+	int AESEncryptor::shiftRows(std::array<unsigned char, ARRAY_SIZE> &inputVector){
+		std::deque<unsigned char> tmp;
+		int ind = 0;
+		for (int i = 0; i < 4; i++) {
+			for (int j = 0; j < 4; j++) {
+				tmp.push_back(inputVector[i*4 + ((4-i+j) % 4)]);
+			}
+			for (int e : tmp) {
+				inputVector[i*4 + ind] = e;
+				ind++;
+			}
+			ind = 0;
+			tmp.clear();
+		}
+		return 0;
 	}
 
 	void AESEncryptor::mixColumns(){
