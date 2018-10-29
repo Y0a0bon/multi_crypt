@@ -21,6 +21,7 @@ class AESEncryptor
 	void mixColumns();
 	void addRoundKey();
 
+	void multiplyArray(std::array<unsigned char, ARRAY_SIZE> &inputVector, std::array<unsigned char, ARRAY_SIZE> &coef);
 	int getThree();
 
 	void encrypt(std::ifstream t_inputStream, std::ofstream t_outputStream);

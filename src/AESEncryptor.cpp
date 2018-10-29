@@ -49,6 +49,17 @@
 
 	}
 
+	void AESEncryptor::multiplyArray(std::array<unsigned char, ARRAY_SIZE> &inputVector, std::array<unsigned char, ARRAY_SIZE> &coef){
+		int tmp = 0;
+		for (int i = 0 ; i < inputVector.size(); i++){
+			for (int j = 0 ; j < inputVector.size(); j++){
+				for (int k = 0 ; k < inputVector.size(); k++){
+					tmp += coef[j*inputVector.size() + k] * inputVector[k*inputVector.size() + j];
+				}
+			}	
+		}
+	}
+
 	int AESEncryptor::getThree(){
 		return 3;
 	}
