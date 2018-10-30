@@ -41,27 +41,30 @@
 		return 0;
 	}
 
-	void AESEncryptor::mixColumns(){
+	void AESEncryptor::mixColumns(std::array<unsigned char, ARRAY_SIZE> &inputVector){
+		std::array<unsigned char, 4> tmpArray;
+		int tmp = 0, i = 0, j = 0, k = 0;
 
+		for (i = 0 ; i < 4; i++){
+			// Compute vertical array
+			for (j = 0 ; j < 4; j++){
+				// Compute each element of the array
+				for (k = 0 ; k < 4; k++){
+					tmp += coef[j*4 + k] * int(inputVector[i + k*4]);
+				}
+				tmpArray[j] = tmp;
+				tmp = 0;
+			}
+			// Store it into original array
+			for (k = 0; k < 4; k++) {
+				inputVector[i + k*4] = tmpArray[k];
+			}
+			tmpArray.empty();
+		}
 	}
 
 	void AESEncryptor::addRoundKey(){
 
-	}
-
-	void AESEncryptor::multiplyArray(std::array<unsigned char, ARRAY_SIZE> &inputVector, std::array<unsigned char, ARRAY_SIZE> &coef){
-		int tmp = 0;
-		for (int i = 0 ; i < inputVector.size(); i++){
-			for (int j = 0 ; j < inputVector.size(); j++){
-				for (int k = 0 ; k < inputVector.size(); k++){
-					tmp += coef[j*inputVector.size() + k] * inputVector[k*inputVector.size() + j];
-				}
-			}	
-		}
-	}
-
-	int AESEncryptor::getThree(){
-		return 3;
 	}
 
 

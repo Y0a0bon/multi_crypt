@@ -7,6 +7,7 @@
 
 int test_AES();
 int test_AES_shiftRows(AESEncryptor *aes_enc);
+int test_AES_mixColumns(AESEncryptor *aes_enc);
 int test_RSA();
 int printVector(void *vector, int size);
 
@@ -18,10 +19,7 @@ int main()
 	return 0;
 }
 
-int printVector(unsigned char *vector, int size){
-	if (vector == nullptr || size < 0) {
-		return 1;
-	}
+int printVector(std::array<unsigned char, 16> vector, int size){
 	for(int i = 0; i < size; i++){
 		for(int j = 0; j < size; j++){
 			std::cout << int(vector[i*size + j]) << "  ";
@@ -35,9 +33,8 @@ int test_AES()
 {
 	unsigned char *test = new unsigned char[3];
 	AESEncryptor *aes_enc = new AESEncryptor(test, 3);
-	int three = aes_enc->getThree();
-	std::cout << "Three : " << three << std::endl;
 	test_AES_shiftRows(aes_enc);
+	test_AES_mixColumns(aes_enc);
 	return 0;
 }
 
@@ -51,7 +48,6 @@ int test_AES_shiftRows(AESEncryptor *aes_enc)
 	std::array<unsigned char, 16> input = {0,1,2,3,0,1,2,3,0,1,2,3,0,1,2,3};
 	std::array<unsigned char, 16> output = {0,1,2,3,3,0,1,2,2,3,0,1,1,2,3,0};
 	aes_enc->shiftRows(input);
-	// FIXME Use array instead for easier comparison
 	if (input == output) {
 		std::cout << "Test passed : shiftRows" << std::endl;
 		return 0;
@@ -60,6 +56,21 @@ int test_AES_shiftRows(AESEncryptor *aes_enc)
 		std::cout << "Test failed : shiftRows" << std::endl;
 		return 1;
 	}
+}
+
+int test_AES_mixColumns(AESEncryptor *aes_enc) {
+	std::array<unsigned char, 16> input = {5,4,1,2,5,3,6,1,4,5,1,2,2,0,3,1};
+	std::array<unsigned char, 16> output = {31,22,24,10,29,25,19,11,24,17,18,10,28,20,16,11};
+	aes_enc->mixColumns(input);
+	if (input == output) {
+		std::cout << "Test passed : mixColumns" << std::endl;
+		return 0;
+	}
+	else {
+		std::cout << "Test failed : mixColumns" << std::endl;
+		return 1;
+	}
+	return 0;
 }
 
 int test_RSA()
