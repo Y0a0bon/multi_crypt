@@ -5,6 +5,8 @@
 ***********************
 Latest Updates :
 
+* v 0.2.0 : Added root functions for AES encryption algorithm (subBytes/shiftRows/mixColumns) with tests
+
 * v 0.1.4 : Implements RSA encrypting on SMALL numbers (unsigned long). GMP library use is coming soon.
 
 ***********************
@@ -35,4 +37,4 @@ To clean :
 
 Sebastien Coll
 
-sebastien.coll (at) etu.upmc.fr
+sebastiencoll (at) protonmail.com
