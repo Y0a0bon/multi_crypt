@@ -1,4 +1,4 @@
-#include "RSA_algorithm.h"
+#include "RSA_algorithm.hpp"
 
 using namespace std;
 

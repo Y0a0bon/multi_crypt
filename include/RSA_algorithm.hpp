@@ -2,7 +2,7 @@
 #define DEF_RSA_algorithm
 
 #include <string>
-#include "RSA_key.h"
+#include "RSA_key.hpp"
 
 class RSA_algorithm{
 	
