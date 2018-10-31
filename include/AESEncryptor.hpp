@@ -17,9 +17,16 @@ class AESEncryptor
 
 	// Methods
 	int subBytes(std::array<unsigned char, ARRAY_SIZE> &inputVector);
+	int subBytes(unsigned char *inputVector, int size);
 	int shiftRows(std::array<unsigned char, ARRAY_SIZE> &inputVector);
-	void mixColumns(std::array<unsigned char, ARRAY_SIZE> &inputVector);
-	void addRoundKey();
+	int shiftRows(unsigned char *inputVector, int size);
+	int mixColumns(std::array<unsigned char, ARRAY_SIZE> &inputVector);
+	int addRoundKey(std::array<unsigned char, ARRAY_SIZE> &inputVector, unsigned char *subKey);
+	int addRoundKey(unsigned char *inputVector, unsigned char *subKey, int size);
+	int copyArray(unsigned char *dest, unsigned char *src, int size);
+	int keyExpansion(unsigned char *subKey);
+
+	int encrypt(std::array<unsigned char, ARRAY_SIZE> &inputVector);
 
 	void encrypt(std::ifstream t_inputStream, std::ofstream t_outputStream);
 
@@ -30,6 +37,7 @@ class AESEncryptor
 	std::ofstream m_outputStream;
 	unsigned char *m_key;
 	unsigned int m_keySize;
+	unsigned int m_rounds;
 
 };
 
