@@ -8,18 +8,28 @@
 int test_AES();
 int test_AES_shiftRows(AESEncryptor *aes_enc);
 int test_AES_mixColumns(AESEncryptor *aes_enc);
+int test_AES_keyExpansion(AESEncryptor *aes_enc);
 int test_RSA();
-int printVector(void *vector, int size);
+int printVector(unsigned char *vector, int size);
 
 int main()
 {
 	
 	test_AES();
-
 	return 0;
 }
 
-int printVector(std::array<unsigned char, 16> vector, int size){
+int printVector(std::array<unsigned char, 16> vector){
+	for(int i = 0; i < vector.size(); i++){
+		for(int j = 0; j < vector.size(); j++){
+			std::cout << int(vector[i*vector.size() + j]) << "  ";
+		}
+		std::cout << std::endl;
+	}
+	return 0;
+}
+
+int printVector(unsigned char *vector, int size){
 	for(int i = 0; i < size; i++){
 		for(int j = 0; j < size; j++){
 			std::cout << int(vector[i*size + j]) << "  ";
@@ -35,6 +45,7 @@ int test_AES()
 	AESEncryptor *aes_enc = new AESEncryptor(test, 3);
 	test_AES_shiftRows(aes_enc);
 	test_AES_mixColumns(aes_enc);
+	test_AES_keyExpansion(aes_enc);
 	return 0;
 }
 
@@ -70,6 +81,14 @@ int test_AES_mixColumns(AESEncryptor *aes_enc) {
 		std::cout << "Test failed : mixColumns" << std::endl;
 		return 1;
 	}
+	return 0;
+}
+
+int test_AES_keyExpansion(AESEncryptor *aes_enc) {
+	unsigned char key[16] = {84,104, 97, 116, 115, 32, 109, 121, 32, 75, 117, 110, 103, 32, 70, 117};
+	//printVector(key, 4);
+	aes_enc->keyExpansion(key);
+	//printVector(key, 4);
 	return 0;
 }
 

@@ -24,6 +24,7 @@ class AESEncryptor
 	int addRoundKey(std::array<unsigned char, ARRAY_SIZE> &inputVector, unsigned char *subKey);
 	int addRoundKey(unsigned char *inputVector, unsigned char *subKey, int size);
 	int copyArray(unsigned char *dest, unsigned char *src, int size);
+	void printHex(unsigned char *vector, int size);
 	int keyExpansion(unsigned char *subKey);
 
 	int encrypt(std::array<unsigned char, ARRAY_SIZE> &inputVector);

@@ -1,10 +1,11 @@
 // AESEncryptor.cpp
 
+#include <iostream>
+#include <iomanip>
 #include <cstring>
 #include <deque>
 #include "AESEncryptor.hpp"
 #include "AESTools.hpp"
-
 
 	// Constructor
 	AESEncryptor::AESEncryptor(unsigned char *t_key, unsigned int t_keySize){
@@ -56,10 +57,10 @@
 	int AESEncryptor::shiftRows(unsigned char *inputVector, int size){
 		unsigned char tmp[size];
 		int i;
-		for (i = 0; i < 4; i++) {
-			tmp[i] = inputVector[(i+3) % 4];
+		for (i = 0; i < size; i++) {
+			tmp[i] = inputVector[(i+1) % size];
 		}
-		for (i = 0; i < 4; i++) {
+		for (i = 0; i < size; i++) {
 			inputVector[i] = tmp[i];
 		}
 		return 0;
@@ -116,6 +117,13 @@
 		return 0;
 	}
 
+	void AESEncryptor::printHex(unsigned char *vector, int size) {
+		for (int i = 0; i < 4; i++) {
+			std::cout << std::hex << int(vector[i]) << "  ";
+		}
+		std::cout << std::endl;
+	}
+
 	int AESEncryptor::keyExpansion(unsigned char *subKey) {
 		unsigned char g_w_3[4];
 		int i;
@@ -123,11 +131,14 @@
 		for (i = 0; i < 4; i++) {
 			g_w_3[i] = subKey[12 + i];
 		}
+		
 		// Compute w[4] ( = g(w[3]))
 		shiftRows(g_w_3, 4);
 		subBytes(g_w_3, 4);
-		g_w_3[15] = int(g_w_3[15]) + 1;
-		addRoundKey(subKey, g_w_3, 4);
+		g_w_3[0] = int(g_w_3[0]) - 1;
+		addRoundKey(g_w_3, subKey, 4);
+
+		copyArray(subKey, g_w_3, 4);
 		// Compute next subkey words
 		for (i = 1; i < 4; i++){
 			addRoundKey(&subKey[i*4], &subKey[(i-1)*4], 4);
@@ -139,11 +150,10 @@
 			return 1;
 		}
 		unsigned char subKey[ARRAY_SIZE];
-		int i;
 		// Initial AddRoundKey
 		addRoundKey(inputVector, m_key);
 		// Intermediate and final rounds (10 for now, 128-bit key)
-		for (i = 0; i < 10; i++) {
+		for (int i = 0; i < 10; i++) {
 			subBytes(inputVector);
 			shiftRows(inputVector);
 			// Intermediate rounds
