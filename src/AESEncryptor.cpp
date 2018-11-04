@@ -15,6 +15,11 @@
 		m_rounds = 10;
 	}
 
+	// Destructor
+	AESEncryptor::~AESEncryptor() {
+		delete m_key;
+	}
+
 	// SubBytes
 	// Y_i = Sbox(X_i)
 	int AESEncryptor::subBytes(std::array<unsigned char, ARRAY_SIZE> &inputVector){
@@ -125,6 +130,7 @@
 	}
 
 	int AESEncryptor::keyExpansion(unsigned char *subKey) {
+		// g_w_3 is g(w[3]), w[3] 4th word of the key
 		unsigned char g_w_3[4];
 		int i;
 		// Put last word of key into g_w_3
@@ -143,9 +149,10 @@
 		for (i = 1; i < 4; i++){
 			addRoundKey(&subKey[i*4], &subKey[(i-1)*4], 4);
 		}
+		return 0;
 	}
 
-	int AESEncryptor::encrypt(std::array<unsigned char, ARRAY_SIZE> &inputVector) {
+	int AESEncryptor::encryptBlock(std::array<unsigned char, ARRAY_SIZE> &inputVector) {
 		if (m_keySize != 128) {
 			return 1;
 		}
@@ -163,6 +170,7 @@
 			keyExpansion(subKey);
 			addRoundKey(inputVector, subKey);
 		}
-
 		return 0;
 	}
+
+
