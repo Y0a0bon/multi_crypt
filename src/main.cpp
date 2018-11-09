@@ -24,7 +24,7 @@ int main()
 int printVector(std::array<unsigned char, 16> vector){
 	for(int i = 0; i < sqrt(vector.size()); i++){
 		for(int j = 0; j < sqrt(vector.size()); j++){
-			std::cout << int(vector[i*vector.size() + j]) << "  ";
+			std::cout << std::hex << int(vector[i*vector.size() + j]) << "  ";
 		}
 		std::cout << std::endl;
 	}
@@ -45,7 +45,7 @@ int printVector(unsigned char *vector, int size){
 
 int test_AES()
 {
-	unsigned char key[16] = {84,104, 97, 116, 115, 32, 109, 121, 32, 75, 117, 110, 103, 32, 70, 117};
+	unsigned char key[16] = {84, 115, 32, 103, 104, 32, 75, 32, 97, 109, 117, 70, 116, 121, 110, 117};
 	AESEncryptor *aes_enc = new AESEncryptor(key, 16);
 	test_AES_shiftRows(aes_enc);
 	test_AES_mixColumns(aes_enc);
@@ -116,10 +116,9 @@ int test_AES_keyExpansion(AESEncryptor *aes_enc) {
 }
 
 int test_AES_encryptBlock(AESEncryptor *aes_enc) {
-	std::array<unsigned char, 16> input = {84, 119, 111, 32, 79, 110, 101, 32, 78, 105, 110, 101, 32, 84, 119, 111};
-	printVector(input);
+	//std::array<unsigned char, 16> input = {84, 119, 111, 32, 79, 110, 101, 32, 78, 105, 110, 101, 32, 84, 119, 111};
+	std::array<unsigned char, 16> input = {84, 79, 78, 32, 119, 110, 105, 84, 111, 101, 110, 119, 32, 32, 101, 111};
 	aes_enc->encryptBlock(input);
-	printVector(input);
 	return 0;
 }
 

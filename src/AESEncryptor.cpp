@@ -1,8 +1,8 @@
 // AESEncryptor.cpp
 
 #include <iostream>
-#include <iomanip>
 #include <cstring>
+#include <cmath>
 #include <deque>
 #include "AESEncryptor.hpp"
 #include "AESTools.hpp"
@@ -13,12 +13,46 @@
 		std::memcpy(m_key, t_key, t_keySize);
 		m_keySize = t_keySize;
 		m_rounds = 10;
+		printVectorLine(m_key, m_keySize);
 	}
 
 	// Destructor
 	AESEncryptor::~AESEncryptor() {
 		delete m_key;
 	}
+
+	int AESEncryptor::printVector(std::array<unsigned char, 16> vector){
+		for(int i = 0; i < sqrt(vector.size()); i++){
+			for(int j = 0; j < sqrt(vector.size()); j++){
+				std::cout << std::hex << int(vector[i*int(sqrt(vector.size())) + j]) << "  ";
+			}
+			std::cout << std::endl;
+		}
+		std::cout << std::endl;
+		return 0;
+	}
+
+	int AESEncryptor::printVector(unsigned char *vector, int size){
+		for(int i = 0; i < sqrt(size); i++){
+			for(int j = 0; j < sqrt(size); j++){
+				std::cout << std::hex << int(vector[i*int(sqrt(size)) + j]) << "  ";
+			}
+			std::cout << std::endl;
+		}
+		std::cout << std::endl;
+		return 0;
+	}
+
+	int AESEncryptor::printVectorLine(unsigned char *vector, int size){
+		for(int i = 0; i < sqrt(size); i++){
+			for(int j = 0; j < sqrt(size); j++){
+				std::cout << std::hex << int(vector[i*int(sqrt(size)) + j]) << "  ";
+			}
+		}
+		std::cout << std::endl;
+		return 0;
+	}
+
 
 	// SubBytes
 	// Y_i = Sbox(X_i)
@@ -153,12 +187,20 @@
 	}
 
 	int AESEncryptor::encryptBlock(std::array<unsigned char, ARRAY_SIZE> &inputVector) {
-		if (m_keySize != 128) {
+		if (m_keySize != 16) {
 			return 1;
 		}
 		unsigned char subKey[ARRAY_SIZE];
+		std::cout << "Input data :"<< std::endl;
+		printVector(inputVector);
 		// Initial AddRoundKey
 		addRoundKey(inputVector, m_key);
+		std::cout << "After first addRoundKey :"<< std::endl;
+		printVector(inputVector);
+		// Put m_key into subKey
+		copyArray(subKey, m_key, ARRAY_SIZE);
+		std::cout << "Key Round 0" << std::endl;
+		printVectorLine(subKey, ARRAY_SIZE);
 		// Intermediate and final rounds (10 for now, 128-bit key)
 		for (int i = 0; i < 10; i++) {
 			subBytes(inputVector);
@@ -169,7 +211,11 @@
 			}
 			keyExpansion(subKey);
 			addRoundKey(inputVector, subKey);
+			std::cout << "Key Round " << i+1 << std::endl;
+			printVectorLine(subKey, ARRAY_SIZE);
 		}
+		std::cout << "Ended" << std::endl;
+		printVector(inputVector);
 		return 0;
 	}
 

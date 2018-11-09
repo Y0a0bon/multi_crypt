@@ -39,6 +39,10 @@ class AESEncryptor
 
 	void encrypt(std::ifstream t_inputStream, std::ofstream t_outputStream);
 
+	int printVector(std::array<unsigned char, 16> vector);
+	int printVector(unsigned char *vector, int size);
+	int printVectorLine(unsigned char *vector, int size);
+
 	private :
 	
 	// Attributes
