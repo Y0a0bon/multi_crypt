@@ -53,7 +53,18 @@
 
 	int printMatrix(unsigned char *matrix, int columns, int lines) {
 		for(int i = 0; i < lines; i++) {
-			for( int j = 0; j < columns; i++){
+			for( int j = 0; j < 4; j++) { //columns; j++){
+				std::cout << std::hex << int(matrix[i*columns + j]) << " ";
+			}
+			std::cout << std::endl;
+		}
+		std::cout << std::endl;
+		return 0;
+	}
+
+	int printSubkey(unsigned char *matrix, int columns) {
+		for(int i = 0; i < WORD_SIZE; i++) {
+			for( int j = 0; j < WORD_SIZE; j++) { //columns; j++){
 				std::cout << std::hex << int(matrix[i*columns + j]) << " ";
 			}
 			std::cout << std::endl;

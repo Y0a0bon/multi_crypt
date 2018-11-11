@@ -20,7 +20,7 @@
 		printMatrix(m_key, 4, 4);
 		keyExpansionComplete();
 		std::cout << "Expanded key computing completed :" << std::endl;
-		printMatrix(m_expandedKey, m_expandedKeyWordSize, 4);
+		//printMatrix(m_expandedKey, m_expandedKeyWordSize, 4);
 	}
 
 	// Destructor
@@ -188,7 +188,9 @@
 		for (int i = 0; i < m_expandedKeyWordSize; i++) {
 			// Round 0 is original key
 			if (i < N) {
-				putWordIntoMatrix(m_expandedKey, m_key, m_expandedKeyWordSize, 0);
+				// FIXME Word here is m_key !! Error
+				putWordIntoMatrix(m_expandedKey, m_key, m_expandedKeyWordSize, i);
+				printSubkey(m_expandedKey, m_expandedKeyWordSize);
 			}
 			else {
 				// Compute W_(i-N) and W_(i-1)
@@ -208,10 +210,15 @@
 				}
 				else {
 					xorArray(W_i_N, W_i_1, 4);
-					putWordIntoMatrix(m_expandedKey, W_i_N, m_expandedKeyWordSize, i);
 				}
+				putWordIntoMatrix(m_expandedKey, W_i_N, m_expandedKeyWordSize, i);
 			}
 		}
+		// Print 3 first 128-bit subkeys
+		std::cout <<  "First 128-bit subkeys" << std::endl;
+		printMatrix(m_expandedKey, m_expandedKeyWordSize, 4);
+		printMatrix(&m_expandedKey[16], m_expandedKeyWordSize, 4);
+		printMatrix(&m_expandedKey[32], m_expandedKeyWordSize, 4);
 		return 0;
 	}
 

@@ -6,6 +6,7 @@
 
 #define WORD_SIZE 4
 #define SBOX_SIZE 256
+
     	// Rijndael S-box
 	extern const unsigned char sbox[SBOX_SIZE];
 
@@ -20,5 +21,6 @@
 	int printVector(unsigned char *vector, int size);
 	int printVectorLine(unsigned char *vector, int size);
 	int printMatrix(unsigned char *matrix, int columns, int lines);
+	int printSubkey(unsigned char *matrix, int columns);
 
 #endif
