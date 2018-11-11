@@ -12,34 +12,11 @@ int test_AES_mixColumns(AESEncryptor *aes_enc);
 int test_AES_keyExpansion(AESEncryptor *aes_enc);
 int test_AES_encryptBlock(AESEncryptor *aes_enc);
 int test_RSA();
-int printVector(unsigned char *vector, int size);
 
 int main()
 {
 	
 	test_AES();
-	return 0;
-}
-
-int printVector(std::array<unsigned char, 16> vector){
-	for(int i = 0; i < sqrt(vector.size()); i++){
-		for(int j = 0; j < sqrt(vector.size()); j++){
-			std::cout << std::hex << int(vector[i*vector.size() + j]) << "  ";
-		}
-		std::cout << std::endl;
-	}
-	std::cout << std::endl;
-	return 0;
-}
-
-int printVector(unsigned char *vector, int size){
-	for(int i = 0; i < sqrt(size); i++){
-		for(int j = 0; j < sqrt(size); j++){
-			std::cout << int(vector[i*int(sqrt(size)) + j]) << "  ";
-		}
-		std::cout << std::endl;
-	}
-	std::cout << std::endl;
 	return 0;
 }
 
@@ -50,7 +27,7 @@ int test_AES()
 	test_AES_shiftRows(aes_enc);
 	test_AES_mixColumns(aes_enc);
 	test_AES_keyExpansion(aes_enc);
-	test_AES_encryptBlock(aes_enc);
+	//test_AES_encryptBlock(aes_enc);
 	return 0;
 }
 
@@ -102,17 +79,19 @@ bool compareArray(unsigned char *input, unsigned char *output, int size) {
 }
 
 int test_AES_keyExpansion(AESEncryptor *aes_enc) {
-	unsigned char input[16] = {84,104, 97, 116, 115, 32, 109, 121, 32, 75, 117, 110, 103, 32, 70, 117};
-	aes_enc->keyExpansion(input);
-	unsigned char output[16] = {226, 50, 252, 241, 145, 18, 145, 136, 177, 89, 228, 230, 214, 121, 162, 147};
-	if(compareArray(input, output, 16)) {
+	//unsigned char expandedKey[aes_enc->getExpandedKeySize];
+	unsigned char expandedKey[44];
+	unsigned char output[16] = {226, 145, 177, 214, 50, 18, 89, 121, 252, 145, 228, 162, 241, 136, 230, 147};
+	if(compareArray(expandedKey, output, 16)) {
 		std::cout << "Test passed : keyExpansion" << std::endl;
-		return 0;
+		//return 0;
 	}
 	else {
 		std::cout << "Test failed : keyExpansion" << std::endl;
-		return 1;
+		//return 1;
 	}
+	//aes_enc->keyExpansion(output);
+	return 1;
 }
 
 int test_AES_encryptBlock(AESEncryptor *aes_enc) {

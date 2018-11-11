@@ -1,4 +1,5 @@
 // AESEncryptor.cpp
+// See https://kavaliro.com/wp-content/uploads/2014/03/AES.pdf
 
 #include <iostream>
 #include <cstring>
@@ -12,47 +13,30 @@
 		m_key = new unsigned char[t_keySize];
 		std::memcpy(m_key, t_key, t_keySize);
 		m_keySize = t_keySize;
-		m_rounds = 10;
-		printVectorLine(m_key, m_keySize);
+		m_rounds = 11;
+		m_expandedKeyWordSize = 4 * m_rounds;
+		m_expandedKey = new unsigned char[4 * m_expandedKeyWordSize];
+		std::cout << "Key : " << std::endl;
+		printMatrix(m_key, 4, 4);
+		keyExpansionComplete();
+		std::cout << "Expanded key computing completed :" << std::endl;
+		printMatrix(m_expandedKey, m_expandedKeyWordSize, 4);
 	}
 
 	// Destructor
 	AESEncryptor::~AESEncryptor() {
 		delete m_key;
+		delete m_expandedKey;
 	}
 
-	int AESEncryptor::printVector(std::array<unsigned char, 16> vector){
-		for(int i = 0; i < sqrt(vector.size()); i++){
-			for(int j = 0; j < sqrt(vector.size()); j++){
-				std::cout << std::hex << int(vector[i*int(sqrt(vector.size())) + j]) << "  ";
-			}
-			std::cout << std::endl;
-		}
-		std::cout << std::endl;
-		return 0;
+	int AESEncryptor::getExpandedKeySize() {
+		return (4*int(m_expandedKeyWordSize));
 	}
 
-	int AESEncryptor::printVector(unsigned char *vector, int size){
-		for(int i = 0; i < sqrt(size); i++){
-			for(int j = 0; j < sqrt(size); j++){
-				std::cout << std::hex << int(vector[i*int(sqrt(size)) + j]) << "  ";
-			}
-			std::cout << std::endl;
-		}
-		std::cout << std::endl;
-		return 0;
+	void AESEncryptor::getExpandedKey(unsigned char *tmp) {
+		for (int i = 0; i < 4*m_expandedKeyWordSize; i++)
+			tmp[i] = m_expandedKey[i];
 	}
-
-	int AESEncryptor::printVectorLine(unsigned char *vector, int size){
-		for(int i = 0; i < sqrt(size); i++){
-			for(int j = 0; j < sqrt(size); j++){
-				std::cout << std::hex << int(vector[i*int(sqrt(size)) + j]) << "  ";
-			}
-		}
-		std::cout << std::endl;
-		return 0;
-	}
-
 
 	// SubBytes
 	// Y_i = Sbox(X_i)
@@ -128,14 +112,16 @@
 		return 0;
 	}
 
-	int AESEncryptor::addRoundKey(std::array<unsigned char, ARRAY_SIZE> &inputVector, unsigned char *subKey){
+	// FIXME Verify size of both inputs ?
+	int AESEncryptor::xorArray(std::array<unsigned char, ARRAY_SIZE> &inputVector, unsigned char *subKey){
 		for (int i = 0; i < ARRAY_SIZE; i++) {
 			inputVector[i] = inputVector[i] ^ subKey[i];
 		}
 		return 0;
 	}
 
-	int AESEncryptor::addRoundKey(unsigned char *inputVector, unsigned char *subKey, int size) {
+	// FIXME Verify size of both inputs ?
+	int AESEncryptor::xorArray(unsigned char *inputVector, unsigned char *subKey, int size) {
 		if (size < 1) {
 			return 1;
 		}
@@ -156,32 +142,75 @@
 		return 0;
 	}
 
-	void AESEncryptor::printHex(unsigned char *vector, int size) {
-		for (int i = 0; i < 4; i++) {
-			std::cout << std::hex << int(vector[i]) << "  ";
+	// Dest is a matrix of size <size>*<size>
+	int AESEncryptor::copyArrayToColumn(unsigned char *dest, unsigned char *src, int size, int ind) {
+		if (size < 1) {
+			return 1;
 		}
-		std::cout << std::endl;
+		for (int i = 0; i< size; i++) {
+			dest[i*size + ind] = src[i];
+		}
+		return 0;
 	}
 
-	int AESEncryptor::keyExpansion(unsigned char *subKey) {
-		// g_w_3 is g(w[3]), w[3] 4th word of the key
-		unsigned char g_w_3[4];
-		int i;
-		// Put last word of key into g_w_3
-		for (i = 0; i < 4; i++) {
-			g_w_3[i] = subKey[12 + i];
+	// Src is a matrix of size <size>*<size>
+	int AESEncryptor::copyColumnToArray(unsigned char *dest, unsigned char *src, int size, int ind) {
+		if (size < 1) {
+			return 1;
 		}
-		
-		// Compute w[4] ( = g(w[3]))
-		shiftRows(g_w_3, 4);
-		subBytes(g_w_3, 4);
-		g_w_3[0] = int(g_w_3[0]) - 1;
-		addRoundKey(g_w_3, subKey, 4);
+		for (int i = 0; i< size; i++) {
+			dest[i] = src[i*size + ind];
+		}
+		return 0;
+	}
 
-		copyArray(subKey, g_w_3, 4);
-		// Compute next subkey words
-		for (i = 1; i < 4; i++){
-			addRoundKey(&subKey[i*4], &subKey[(i-1)*4], 4);
+	// Columns is number of columns in the matrix
+	// ind is indice of the line to retrieve word from
+	int AESEncryptor::getWordFromMatrix(unsigned char *word,unsigned char *matrix, int columns, int ind) {
+		for(int i= 0; i < WORD_SIZE; i++) {
+			word[i] = matrix[i*columns + ind];
+		}
+		return 0;
+	}
+
+	int AESEncryptor::putWordIntoMatrix(unsigned char *matrix, unsigned char *word, int columns, int ind) {
+		for(int i= 0; i < WORD_SIZE; i++) {
+			matrix[i*columns + ind] = word[i];
+		}
+		return 0;
+	}
+
+	int AESEncryptor::keyExpansionComplete() {
+		int N = m_keySize / 4;
+		unsigned char W_i_N[WORD_SIZE], W_i_1[WORD_SIZE];
+		unsigned char rc[11] = {0, 1, 2, 4, 8, 16, 32, 64, 128, 27, 54};
+		unsigned char rcon[WORD_SIZE] = {0, 0, 0, 0};
+		for (int i = 0; i < m_expandedKeyWordSize; i++) {
+			// Round 0 is original key
+			if (i < N) {
+				putWordIntoMatrix(m_expandedKey, m_key, m_expandedKeyWordSize, 0);
+			}
+			else {
+				// Compute W_(i-N) and W_(i-1)
+				getWordFromMatrix(W_i_N, m_expandedKey, m_expandedKeyWordSize, i - N);
+				getWordFromMatrix(W_i_1, m_expandedKey, m_expandedKeyWordSize, i - 1);
+				// Compute rcon_i
+				if ((i % N) == 0) {
+					subBytes(W_i_1, 4);
+					shiftRows(W_i_1, 4);
+					xorArray(W_i_N, W_i_1, 4);
+					rcon[0] = rc[i/N];
+					xorArray(W_i_N, rcon, 4);
+				}
+				// Only in AES-256 mode
+				else if (N > 6 && (i % N) == 4) {
+					// TO DO
+				}
+				else {
+					xorArray(W_i_N, W_i_1, 4);
+					putWordIntoMatrix(m_expandedKey, W_i_N, m_expandedKeyWordSize, i);
+				}
+			}
 		}
 		return 0;
 	}
@@ -194,7 +223,7 @@
 		std::cout << "Input data :"<< std::endl;
 		printVector(inputVector);
 		// Initial AddRoundKey
-		addRoundKey(inputVector, m_key);
+		xorArray(inputVector, m_key);
 		std::cout << "After first addRoundKey :"<< std::endl;
 		printVector(inputVector);
 		// Put m_key into subKey
@@ -203,16 +232,17 @@
 		printVectorLine(subKey, ARRAY_SIZE);
 		// Intermediate and final rounds (10 for now, 128-bit key)
 		for (int i = 0; i < 10; i++) {
+			// FIXME Use m_expandedKey instead of subKey
+			std::cout << "Key Round " << i+1 << std::endl;
+			printVectorLine(subKey, ARRAY_SIZE);
+
 			subBytes(inputVector);
 			shiftRows(inputVector);
 			// Intermediate rounds
 			if (i <9) {
 				mixColumns(inputVector);
 			}
-			keyExpansion(subKey);
-			addRoundKey(inputVector, subKey);
-			std::cout << "Key Round " << i+1 << std::endl;
-			printVectorLine(subKey, ARRAY_SIZE);
+			xorArray(inputVector, subKey);
 		}
 		std::cout << "Ended" << std::endl;
 		printVector(inputVector);

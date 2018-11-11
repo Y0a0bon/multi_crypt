@@ -19,6 +19,9 @@ class AESEncryptor
 	~AESEncryptor();
 
 	// Methods
+	int getExpandedKeySize();
+	void getExpandedKey(unsigned char *tmp);
+
 	int subBytes(std::array<unsigned char, ARRAY_SIZE> &inputVector);
 	int subBytes(unsigned char *inputVector, int size);
 
@@ -27,22 +30,21 @@ class AESEncryptor
 	
 	int mixColumns(std::array<unsigned char, ARRAY_SIZE> &inputVector);
 	
-	int addRoundKey(std::array<unsigned char, ARRAY_SIZE> &inputVector, unsigned char *subKey);
-	int addRoundKey(unsigned char *inputVector, unsigned char *subKey, int size);
+	int getWordFromMatrix(unsigned char *word,unsigned char *matrix, int columns, int ind);
+	int putWordIntoMatrix(unsigned char *matrix, unsigned char *word, int columns, int ind);
+	int xorArray(std::array<unsigned char, ARRAY_SIZE> &inputVector, unsigned char *subKey);
+	int xorArray(unsigned char *inputVector, unsigned char *subKey, int size);
 	
 	int copyArray(unsigned char *dest, unsigned char *src, int size);
-	void printHex(unsigned char *vector, int size);
+	int copyArrayToColumn(unsigned char *dest, unsigned char *src, int size, int ind);
+	int copyColumnToArray(unsigned char *dest, unsigned char *src, int size, int ind);
+
 	
-	int keyExpansion(unsigned char *subKey);
+	int keyExpansionComplete();
 
 	int encryptBlock(std::array<unsigned char, ARRAY_SIZE> &inputVector);
 
 	void encrypt(std::ifstream t_inputStream, std::ofstream t_outputStream);
-
-	int printVector(std::array<unsigned char, 16> vector);
-	int printVector(unsigned char *vector, int size);
-	int printVectorLine(unsigned char *vector, int size);
-
 	private :
 	
 	// Attributes
@@ -50,6 +52,8 @@ class AESEncryptor
 	std::ofstream m_outputStream;
 	unsigned char *m_key;
 	unsigned int m_keySize;
+	unsigned char *m_expandedKey;
+	unsigned int m_expandedKeyWordSize;
 	unsigned int m_rounds;
 
 };
