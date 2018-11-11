@@ -166,7 +166,7 @@
 
 	// Columns is number of columns in the matrix
 	// ind is indice of the line to retrieve word from
-	int AESEncryptor::getWordFromMatrix(unsigned char *word,unsigned char *matrix, int columns, int ind) {
+	int AESEncryptor::getWordFromMatrix(unsigned char *word, unsigned char *matrix, int columns, int ind) {
 		for(int i= 0; i < WORD_SIZE; i++) {
 			word[i] = matrix[i*columns + ind];
 		}
@@ -182,15 +182,16 @@
 
 	int AESEncryptor::keyExpansionComplete() {
 		int N = m_keySize / 4;
-		unsigned char W_i_N[WORD_SIZE], W_i_1[WORD_SIZE];
+		unsigned char W_i_N[WORD_SIZE], W_i_1[WORD_SIZE], wordBuffer[WORD_SIZE];
+
 		unsigned char rc[11] = {0, 1, 2, 4, 8, 16, 32, 64, 128, 27, 54};
 		unsigned char rcon[WORD_SIZE] = {0, 0, 0, 0};
+		
 		for (int i = 0; i < m_expandedKeyWordSize; i++) {
 			// Round 0 is original key
 			if (i < N) {
-				// FIXME Word here is m_key !! Error
-				putWordIntoMatrix(m_expandedKey, m_key, m_expandedKeyWordSize, i);
-				printSubkey(m_expandedKey, m_expandedKeyWordSize);
+				getWordFromMatrix(wordBuffer, m_key, WORD_SIZE, i);
+				putWordIntoMatrix(m_expandedKey, wordBuffer, m_expandedKeyWordSize, i);
 			}
 			else {
 				// Compute W_(i-N) and W_(i-1)
@@ -216,9 +217,9 @@
 		}
 		// Print 3 first 128-bit subkeys
 		std::cout <<  "First 128-bit subkeys" << std::endl;
-		printMatrix(m_expandedKey, m_expandedKeyWordSize, 4);
-		printMatrix(&m_expandedKey[16], m_expandedKeyWordSize, 4);
-		printMatrix(&m_expandedKey[32], m_expandedKeyWordSize, 4);
+		printSubkey(m_expandedKey, m_expandedKeyWordSize);
+		printSubkey(&m_expandedKey[4], m_expandedKeyWordSize);
+		printSubkey(&m_expandedKey[8], m_expandedKeyWordSize);
 		return 0;
 	}
 

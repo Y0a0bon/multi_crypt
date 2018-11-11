@@ -87,8 +87,8 @@ int test_AES_getWordFromMatrix(AESEncryptor *aes_enc) {
 	unsigned char input[WORD_SIZE];
 	unsigned char key[16] = {84, 115, 32, 103, 104, 32, 75, 32, 97, 109, 117, 70, 116, 121, 110, 117};
 	unsigned char output[WORD_SIZE] = {84, 104, 97, 116};
-
-	aes_enc->getWordFromMatrix(output, key, WORD_SIZE, 0);
+	
+	aes_enc->getWordFromMatrix(input, key, WORD_SIZE, 0);
 	
 	if(compareArray(input, output, 4)) {
 		std::cout << "Test passed : getWordFromMatrix" << std::endl;
@@ -98,7 +98,6 @@ int test_AES_getWordFromMatrix(AESEncryptor *aes_enc) {
 		std::cout << "Test failed : getWordFromMatrix" << std::endl;
 		return 1;
 	}
-	return 0;
 }
 
 int test_AES_putWordIntoMatrix(AESEncryptor *aes_enc) {
@@ -116,7 +115,6 @@ int test_AES_putWordIntoMatrix(AESEncryptor *aes_enc) {
 		std::cout << "Test failed : putWordIntoMatrix" << std::endl;
 		return 1;
 	}
-	return 0;
 }
 
 int test_AES_keyExpansion(AESEncryptor *aes_enc) {
