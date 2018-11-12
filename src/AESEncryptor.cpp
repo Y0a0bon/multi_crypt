@@ -58,13 +58,14 @@
 		return 0;
 	}
 
-	// Matrix
+	// Show off use od deque and std::array
+	// But is it really necesary ?
 	int AESEncryptor::shiftRows(std::array<unsigned char, ARRAY_SIZE> &inputVector){
 		std::deque<unsigned char> tmp;
 		int ind = 0;
 		for (int i = 0; i < 4; i++) {
 			for (int j = 0; j < 4; j++) {
-				tmp.push_back(inputVector[i*4 + ((4-i+j) % 4)]);
+				tmp.push_back(inputVector[i*4 + ((i+j)  % 4)]);
 			}
 			for (int e : tmp) {
 				inputVector[i*4 + ind] = e;
@@ -76,17 +77,18 @@
 		return 0;
 	}
 
-	// Vector
-	int AESEncryptor::shiftRows(unsigned char *inputVector, int size){
+	int AESEncryptor::shiftRows(unsigned char *inputVector, int size) {
 		unsigned char tmp[size];
-		int i;
-		for (i = 0; i < size; i++) {
-			tmp[i] = inputVector[(i+1) % size];
+		int i, j;
+		for (i = 0; i < sqrt(size); i++) {
+			for(j = 0; j < sqrt(size); j++) {
+				tmp[int(i*sqrt(size)) + j] = inputVector[int(i*sqrt(size)) + ((i+j) % size)];
+			}
 		}
 		for (i = 0; i < size; i++) {
 			inputVector[i] = tmp[i];
 		}
-		return 0;
+
 	}
 
 	int AESEncryptor::mixColumns(std::array<unsigned char, ARRAY_SIZE> &inputVector){
@@ -180,6 +182,15 @@
 		return 0;
 	}
 
+	int AESEncryptor::getSubMatrix(unsigned char *dest, unsigned char *src, int columns, int ind) {
+		for (int i = 0; i < WORD_SIZE; i++) {
+			for( int j = 0; j < WORD_SIZE; j++) {
+				dest[i*WORD_SIZE + j] = src[i*columns + ind + j];
+			}
+		}
+		return 0;
+	}
+
 	int AESEncryptor::keyExpansionComplete() {
 		int N = m_keySize / 4;
 		unsigned char W_i_N[WORD_SIZE], W_i_1[WORD_SIZE], wordBuffer[WORD_SIZE];
@@ -215,11 +226,7 @@
 				putWordIntoMatrix(m_expandedKey, W_i_N, m_expandedKeyWordSize, i);
 			}
 		}
-		// Print 3 first 128-bit subkeys
-		std::cout <<  "First 128-bit subkeys" << std::endl;
-		printSubkey(m_expandedKey, m_expandedKeyWordSize);
-		printSubkey(&m_expandedKey[4], m_expandedKeyWordSize);
-		printSubkey(&m_expandedKey[8], m_expandedKeyWordSize);
+		
 		return 0;
 	}
 
@@ -227,33 +234,49 @@
 		if (m_keySize != 16) {
 			return 1;
 		}
+		
 		unsigned char subKey[ARRAY_SIZE];
+		
 		std::cout << "Input data :"<< std::endl;
 		printVector(inputVector);
-		// Initial AddRoundKey
-		xorArray(inputVector, m_key);
-		std::cout << "After first addRoundKey :"<< std::endl;
-		printVector(inputVector);
-		// Put m_key into subKey
-		copyArray(subKey, m_key, ARRAY_SIZE);
-		std::cout << "Key Round 0" << std::endl;
-		printVectorLine(subKey, ARRAY_SIZE);
-		// Intermediate and final rounds (10 for now, 128-bit key)
-		for (int i = 0; i < 10; i++) {
-			// FIXME Use m_expandedKey instead of subKey
-			std::cout << "Key Round " << i+1 << std::endl;
-			printVectorLine(subKey, ARRAY_SIZE);
+		
+		std::cout << "First subkey :" << std::endl;
+		getSubMatrix(subKey, m_expandedKey, m_expandedKeyWordSize, 0);
+		printVector(subKey, ARRAY_SIZE);
 
+		// Initial AddRoundKey
+		xorArray(inputVector, subKey);
+		std::cout << "State Matrix Round 0 :"<< std::endl;
+		printVector(inputVector);
+
+		// Intermediate and final rounds (10 for now, 128-bit key)
+		for (int i = 1; i < 3; i++) {
+			std::cout << "*** State Matrix Round " << int(i) << " ***" << std::endl;
+			printVector(inputVector);
 			subBytes(inputVector);
+			std::cout << "After subBytes" << std::endl;
+			printVector(inputVector);
 			shiftRows(inputVector);
+			std::cout << "After shiftRows" << std::endl;
+			printVector(inputVector);
 			// Intermediate rounds
-			if (i <9) {
+			if (i < 10) {
 				mixColumns(inputVector);
+				std::cout << "After mixColumns" << std::endl;
+				printVector(inputVector);
 			}
+
+			getSubMatrix(subKey, m_expandedKey, m_expandedKeyWordSize, i*16);
+
+			//std::cout <<  "Subkey Round " << int(i) << std::endl;
+			//printSubkey(m_expandedKey, m_expandedKeyWordSize, i*4);
+
 			xorArray(inputVector, subKey);
+			//std::cout << "*** Final State Matrix Round " << int(i) << " ***"<< std::endl;
+			//printVector(inputVector);
 		}
 		std::cout << "Ended" << std::endl;
-		printVector(inputVector);
+
 		return 0;
 	}
 

@@ -8,11 +8,12 @@
 #include "AESTools.hpp"
 
 int test_AES();
+bool compareArray(unsigned char *input, unsigned char *output, int size);
 int test_AES_shiftRows(AESEncryptor *aes_enc);
 int test_AES_mixColumns(AESEncryptor *aes_enc);
 int test_AES_getWordFromMatrix(AESEncryptor *aes_enc);
 int test_AES_putWordIntoMatrix(AESEncryptor *aes_enc);
-int test_AES_keyExpansion(AESEncryptor *aes_enc);
+int test_AES_keyExpansionComplete();
 int test_AES_encryptBlock(AESEncryptor *aes_enc);
 int test_RSA();
 
@@ -27,12 +28,16 @@ int test_AES()
 {
 	unsigned char key[16] = {84, 115, 32, 103, 104, 32, 75, 32, 97, 109, 117, 70, 116, 121, 110, 117};
 	AESEncryptor *aes_enc = new AESEncryptor(key, 16);
+	
 	test_AES_shiftRows(aes_enc);
 	test_AES_mixColumns(aes_enc);
+
 	test_AES_getWordFromMatrix(aes_enc);
 	test_AES_putWordIntoMatrix(aes_enc);
-	//test_AES_keyExpansion(aes_enc);
-	//test_AES_encryptBlock(aes_enc);
+	
+	test_AES_keyExpansionComplete();
+	test_AES_encryptBlock(aes_enc);
+	
 	return 0;
 }
 
@@ -44,9 +49,14 @@ int test_AES_subBytes(AESEncryptor *aes_enc)
 int test_AES_shiftRows(AESEncryptor *aes_enc)
 {
 	std::array<unsigned char, 16> input = {0,1,2,3,0,1,2,3,0,1,2,3,0,1,2,3};
-	std::array<unsigned char, 16> output = {0,1,2,3,3,0,1,2,2,3,0,1,1,2,3,0};
+	std::array<unsigned char, 16> output = {0,1,2,3,1,2,3,0,2,3,0,1,3,0,1,2};
+	unsigned char input_v[16] = {0,1,2,3,0,1,2,3,0,1,2,3,0,1,2,3};
+	unsigned char output_v[16] = {0,1,2,3,1,2,3,0,2,3,0,1,3,0,1,2};
+
 	aes_enc->shiftRows(input);
-	if (input == output) {
+	aes_enc->shiftRows(input_v, 16);
+
+	if ((input == output) || !compareArray(input_v, output_v, 16)) {
 		std::cout << "Test passed : shiftRows" << std::endl;
 		return 0;
 	}
@@ -117,19 +127,18 @@ int test_AES_putWordIntoMatrix(AESEncryptor *aes_enc) {
 	}
 }
 
-int test_AES_keyExpansion(AESEncryptor *aes_enc) {
+int test_AES_keyExpansionComplete() {
 	//unsigned char expandedKey[aes_enc->getExpandedKeySize];
-	unsigned char expandedKey[44];
+	unsigned char expandedKey[16];
 	unsigned char output[16] = {226, 145, 177, 214, 50, 18, 89, 121, 252, 145, 228, 162, 241, 136, 230, 147};
 	if(compareArray(expandedKey, output, 16)) {
 		std::cout << "Test passed : keyExpansion" << std::endl;
-		//return 0;
+		return 0;
 	}
 	else {
 		std::cout << "Test failed : keyExpansion" << std::endl;
-		//return 1;
+		return 1;
 	}
-	//aes_enc->keyExpansion(output);
 	return 1;
 }
 

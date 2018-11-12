@@ -32,6 +32,8 @@ class AESEncryptor
 	
 	int getWordFromMatrix(unsigned char *word,unsigned char *matrix, int columns, int ind);
 	int putWordIntoMatrix(unsigned char *matrix, unsigned char *word, int columns, int ind);
+	int getSubMatrix(unsigned char *dest, unsigned char *src, int columns, int ind);
+
 	int xorArray(std::array<unsigned char, ARRAY_SIZE> &inputVector, unsigned char *subKey);
 	int xorArray(unsigned char *inputVector, unsigned char *subKey, int size);
 	

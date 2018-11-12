@@ -21,6 +21,6 @@
 	int printVector(unsigned char *vector, int size);
 	int printVectorLine(unsigned char *vector, int size);
 	int printMatrix(unsigned char *matrix, int columns, int lines);
-	int printSubkey(unsigned char *matrix, int columns);
+	int printSubkey(unsigned char *matrix, int columns, int ind);
 
 #endif
