@@ -14,7 +14,7 @@
     	extern const unsigned char rsbox[SBOX_SIZE];
 
 	// mixColumn matrix
-	extern const int coef[16];
+	extern const unsigned char coef[16];
 
 	void printHex(unsigned char *vector, int size);
 	int printVector(std::array<unsigned char, 16> vector);

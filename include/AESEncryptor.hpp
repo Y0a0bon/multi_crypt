@@ -28,6 +28,7 @@ class AESEncryptor
 	int shiftRows(std::array<unsigned char, ARRAY_SIZE> &inputVector);
 	int shiftRows(unsigned char *inputVector, int size);
 	
+	int multiplyMatrix(std::array<unsigned char, ARRAY_SIZE> &dest, unsigned char *multiplicator, std::array<unsigned char, ARRAY_SIZE> &inputVector);
 	int mixColumns(std::array<unsigned char, ARRAY_SIZE> &inputVector);
 	
 	int getWordFromMatrix(unsigned char *word,unsigned char *matrix, int columns, int ind);

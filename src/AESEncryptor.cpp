@@ -91,26 +91,32 @@
 
 	}
 
-	int AESEncryptor::mixColumns(std::array<unsigned char, ARRAY_SIZE> &inputVector){
-		std::array<unsigned char, 4> tmpArray;
-		int tmp = 0, i = 0, j = 0, k = 0;
-
-		for (i = 0 ; i < 4; i++){
-			// Compute vertical array
-			for (j = 0 ; j < 4; j++){
-				// Compute each element of the array
-				for (k = 0 ; k < 4; k++){
-					tmp += coef[j*4 + k] * int(inputVector[i + k*4]);
+	int AESEncryptor::multiplyMatrix(std::array<unsigned char, ARRAY_SIZE> &dest, unsigned char *multiplicator, std::array<unsigned char, ARRAY_SIZE> &inputVector) {
+		int i, j, k;
+		int sum;
+		for (i=0; i < WORD_SIZE; i++) {
+			for (j=0; j < WORD_SIZE; j++) {
+				std::cout << "Sum is ";
+				sum = 0;
+				for (k=0; k < WORD_SIZE; k++) {
+					int tmp  = multiplicator[i + k*WORD_SIZE] * inputVector[k*WORD_SIZE + j];
+					std::cout << tmp << " +";
+					sum += tmp;
 				}
-				tmpArray[j] = tmp;
-				tmp = 0;
+				std::cout << std::endl;
+				std::cout << "Final sum is " << sum << std::endl;
+				dest[i*WORD_SIZE + j] = sum;
 			}
-			// Store it into original array
-			for (k = 0; k < 4; k++) {
-				inputVector[i + k*4] = tmpArray[k];
-			}
-			tmpArray.empty();
 		}
+		return 0;
+	}
+	
+	int AESEncryptor::mixColumns(std::array<unsigned char, ARRAY_SIZE> &inputVector){
+		std::array<unsigned char, ARRAY_SIZE> dest;
+		unsigned char tmp[16];
+		memcpy(tmp, coef, 16);
+		multiplyMatrix(dest, tmp, inputVector);
+		inputVector = dest;
 		return 0;
 	}
 
@@ -250,7 +256,7 @@
 		printVector(inputVector);
 
 		// Intermediate and final rounds (10 for now, 128-bit key)
-		for (int i = 1; i < 3; i++) {
+		for (int i = 1; i < 2; i++) {
 			std::cout << "*** State Matrix Round " << int(i) << " ***" << std::endl;
 			printVector(inputVector);
 			subBytes(inputVector);
