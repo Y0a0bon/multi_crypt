@@ -7,6 +7,11 @@
 #define WORD_SIZE 4
 #define SBOX_SIZE 256
 
+#define FUNC_OK 0
+#define FUNC_ERROR 1
+#define INPUT_ERROR 2
+#define UNKNOWN_ERROR 3
+
     	// Rijndael S-box
 	extern const unsigned char sbox[SBOX_SIZE];
 

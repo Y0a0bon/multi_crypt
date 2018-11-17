@@ -42,20 +42,20 @@
 	// Y_i = Sbox(X_i)
 	int AESEncryptor::subBytes(std::array<unsigned char, ARRAY_SIZE> &inputVector){
 		if (inputVector.empty())
-			return 1;
+			return INPUT_ERROR;
 		for (int i = 0 ; i < inputVector.size(); i++){
 			inputVector[i] = sbox[inputVector[i]];
 		}
-		return 0;
+		return FUNC_OK;
 	}
 
 	int AESEncryptor::subBytes(unsigned char *inputVector, int size) {
 		if (inputVector == nullptr)
-			return 1;
+			return INPUT_ERROR;
 		for (int i = 0 ; i < size; i++){
 			inputVector[i] = sbox[inputVector[i]];
 		}
-		return 0;
+		return FUNC_OK;
 	}
 
 	// Show off use od deque and std::array
@@ -74,7 +74,7 @@
 			ind = 0;
 			tmp.clear();
 		}
-		return 0;
+		return FUNC_OK;
 	}
 
 	int AESEncryptor::shiftRows(unsigned char *inputVector, int size) {
@@ -91,33 +91,54 @@
 
 	}
 
-	int AESEncryptor::multiplyMatrix(std::array<unsigned char, ARRAY_SIZE> &dest, unsigned char *multiplicator, std::array<unsigned char, ARRAY_SIZE> &inputVector) {
+	int AESEncryptor::multiplyMatrixValue(int factor, int value){
+		switch(factor) {
+			case 1:
+				return value;
+				break;
+			case 2:
+				if (value < 128) {
+					return 2 * value;
+				}
+				else {
+					return value ^ value ;
+				}
+				break;
+			case 3:
+				return multiplyMatrixValue(2, value) ^ value;
+				break;
+			default:
+				return INPUT_ERROR;
+		}
+	}
+
+	int AESEncryptor::multiplyFixedMatrix(std::array<unsigned char, ARRAY_SIZE> &dest, unsigned char *multiplicator, std::array<unsigned char, ARRAY_SIZE> &inputVector) {
 		int i, j, k;
-		int sum;
+		int sum, tmp;
 		for (i=0; i < WORD_SIZE; i++) {
 			for (j=0; j < WORD_SIZE; j++) {
 				std::cout << "Sum is ";
 				sum = 0;
 				for (k=0; k < WORD_SIZE; k++) {
-					int tmp  = multiplicator[i + k*WORD_SIZE] * inputVector[k*WORD_SIZE + j];
+					tmp = multiplyMatrixValue(int(multiplicator[i + k*WORD_SIZE]), int(inputVector[k*WORD_SIZE + j]));
 					std::cout << tmp << " +";
-					sum += tmp;
+					sum = sum ^ tmp;
 				}
 				std::cout << std::endl;
 				std::cout << "Final sum is " << sum << std::endl;
 				dest[i*WORD_SIZE + j] = sum;
 			}
 		}
-		return 0;
+		return FUNC_OK;
 	}
 	
 	int AESEncryptor::mixColumns(std::array<unsigned char, ARRAY_SIZE> &inputVector){
 		std::array<unsigned char, ARRAY_SIZE> dest;
 		unsigned char tmp[16];
 		memcpy(tmp, coef, 16);
-		multiplyMatrix(dest, tmp, inputVector);
+		multiplyFixedMatrix(dest, tmp, inputVector);
 		inputVector = dest;
-		return 0;
+		return FUNC_OK;
 	}
 
 	// FIXME Verify size of both inputs ?
@@ -125,51 +146,51 @@
 		for (int i = 0; i < ARRAY_SIZE; i++) {
 			inputVector[i] = inputVector[i] ^ subKey[i];
 		}
-		return 0;
+		return FUNC_OK;
 	}
 
 	// FIXME Verify size of both inputs ?
 	int AESEncryptor::xorArray(unsigned char *inputVector, unsigned char *subKey, int size) {
 		if (size < 1) {
-			return 1;
+			return INPUT_ERROR;
 		}
 		for (int i = 0; i < size; i++) {
 			inputVector[i] = inputVector[i] ^ subKey[i];
 		}
-		return 0;
+		return FUNC_OK;
 	}
 
 	// FIXME Use memcpy ?!
 	int AESEncryptor::copyArray(unsigned char *dest, unsigned char *src, int size) {
 		if (size < 1) {
-			return 1;
+			return INPUT_ERROR;
 		}
 		for (int i = 0; i< size; i++) {
 			dest[i] = src[i];
 		}
-		return 0;
+		return FUNC_OK;
 	}
 
 	// Dest is a matrix of size <size>*<size>
 	int AESEncryptor::copyArrayToColumn(unsigned char *dest, unsigned char *src, int size, int ind) {
 		if (size < 1) {
-			return 1;
+			return INPUT_ERROR;
 		}
 		for (int i = 0; i< size; i++) {
 			dest[i*size + ind] = src[i];
 		}
-		return 0;
+		return FUNC_OK;
 	}
 
 	// Src is a matrix of size <size>*<size>
 	int AESEncryptor::copyColumnToArray(unsigned char *dest, unsigned char *src, int size, int ind) {
 		if (size < 1) {
-			return 1;
+			return INPUT_ERROR;
 		}
 		for (int i = 0; i< size; i++) {
 			dest[i] = src[i*size + ind];
 		}
-		return 0;
+		return FUNC_OK;
 	}
 
 	// Columns is number of columns in the matrix
@@ -178,14 +199,14 @@
 		for(int i= 0; i < WORD_SIZE; i++) {
 			word[i] = matrix[i*columns + ind];
 		}
-		return 0;
+		return FUNC_OK;
 	}
 
 	int AESEncryptor::putWordIntoMatrix(unsigned char *matrix, unsigned char *word, int columns, int ind) {
 		for(int i= 0; i < WORD_SIZE; i++) {
 			matrix[i*columns + ind] = word[i];
 		}
-		return 0;
+		return FUNC_OK;
 	}
 
 	int AESEncryptor::getSubMatrix(unsigned char *dest, unsigned char *src, int columns, int ind) {
@@ -194,7 +215,7 @@
 				dest[i*WORD_SIZE + j] = src[i*columns + ind + j];
 			}
 		}
-		return 0;
+		return FUNC_OK;
 	}
 
 	int AESEncryptor::keyExpansionComplete() {
@@ -233,12 +254,12 @@
 			}
 		}
 		
-		return 0;
+		return FUNC_OK;
 	}
 
 	int AESEncryptor::encryptBlock(std::array<unsigned char, ARRAY_SIZE> &inputVector) {
 		if (m_keySize != 16) {
-			return 1;
+			return INPUT_ERROR;
 		}
 		
 		unsigned char subKey[ARRAY_SIZE];
@@ -283,7 +304,7 @@
 		}
 		std::cout << "Ended" << std::endl;
 
-		return 0;
+		return FUNC_OK;
 	}
 
 
