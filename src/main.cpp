@@ -70,6 +70,7 @@ int test_AES_mixColumns(AESEncryptor *aes_enc) {
 	std::array<unsigned char, 16> input = {5,4,1,2,5,3,6,1,4,5,1,2,2,0,3,1};
 	std::array<unsigned char, 16> output = {31,22,24,10,29,25,19,11,24,17,18,10,28,20,16,11};
 	aes_enc->mixColumns(input);
+	printVector(input);
 	if (input == output) {
 		std::cout << "Test passed : mixColumns" << std::endl;
 		return 0;

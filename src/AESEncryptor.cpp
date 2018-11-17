@@ -91,53 +91,38 @@
 
 	}
 
-	int AESEncryptor::multiplyMatrixValue(int factor, int value){
-		switch(factor) {
-			case 1:
-				return value;
-				break;
-			case 2:
-				if (value < 128) {
-					return 2 * value;
-				}
-				else {
-					return value ^ value ;
-				}
-				break;
-			case 3:
-				return multiplyMatrixValue(2, value) ^ value;
-				break;
-			default:
-				return INPUT_ERROR;
-		}
-	}
-
-	int AESEncryptor::multiplyFixedMatrix(std::array<unsigned char, ARRAY_SIZE> &dest, unsigned char *multiplicator, std::array<unsigned char, ARRAY_SIZE> &inputVector) {
-		int i, j, k;
-		int sum, tmp;
+	int AESEncryptor::mixColumnsWord(unsigned char *multiplicator, unsigned char *word) {
+		unsigned char buffer1[WORD_SIZE];
+		unsigned char buffer2[WORD_SIZE];
+		int i, h;
+		
+		memcpy(buffer1, word, 4);
+		
 		for (i=0; i < WORD_SIZE; i++) {
-			for (j=0; j < WORD_SIZE; j++) {
-				std::cout << "Sum is ";
-				sum = 0;
-				for (k=0; k < WORD_SIZE; k++) {
-					tmp = multiplyMatrixValue(int(multiplicator[i + k*WORD_SIZE]), int(inputVector[k*WORD_SIZE + j]));
-					std::cout << tmp << " +";
-					sum = sum ^ tmp;
-				}
-				std::cout << std::endl;
-				std::cout << "Final sum is " << sum << std::endl;
-				dest[i*WORD_SIZE + j] = sum;
-			}
+			h = (unsigned char)((signed char)(word[i]) >> 7);
+			buffer2[i] = word[i] << 1;
+			buffer2[i] ^= 0x1B & h;
 		}
+		
+		word[0] = buffer2[0] ^ buffer1[3] ^ buffer1[2] ^ buffer2[1] ^ buffer1[1];
+		word[1] = buffer2[1] ^ buffer1[0] ^ buffer1[3] ^ buffer2[2] ^ buffer1[2];
+		word[2] = buffer2[2] ^ buffer1[1] ^ buffer1[0] ^ buffer2[3] ^ buffer1[3];
+		word[3] = buffer2[3] ^ buffer1[2] ^ buffer1[1] ^ buffer2[0] ^ buffer1[0];
+		
 		return FUNC_OK;
 	}
 	
 	int AESEncryptor::mixColumns(std::array<unsigned char, ARRAY_SIZE> &inputVector){
-		std::array<unsigned char, ARRAY_SIZE> dest;
-		unsigned char tmp[16];
-		memcpy(tmp, coef, 16);
-		multiplyFixedMatrix(dest, tmp, inputVector);
-		inputVector = dest;
+		unsigned char word[4];
+		unsigned char multiplicator[16];
+
+		memcpy(multiplicator, coef, 16);
+		
+		for (int i = 0; i < 4; i++) {
+			getWordFromMatrix(word, inputVector, i);
+			mixColumnsWord(multiplicator, word);
+			putWordIntoMatrix(inputVector, word, i);
+		}
 		return FUNC_OK;
 	}
 
@@ -202,9 +187,23 @@
 		return FUNC_OK;
 	}
 
+	int AESEncryptor::getWordFromMatrix(unsigned char *word, std::array<unsigned char, ARRAY_SIZE> &matrix, int ind) {
+		for(int i= 0; i < WORD_SIZE; i++) {
+			word[i] = matrix[i*WORD_SIZE + ind];
+		}
+		return FUNC_OK;
+	}
+
 	int AESEncryptor::putWordIntoMatrix(unsigned char *matrix, unsigned char *word, int columns, int ind) {
 		for(int i= 0; i < WORD_SIZE; i++) {
 			matrix[i*columns + ind] = word[i];
+		}
+		return FUNC_OK;
+	}
+
+	int AESEncryptor::putWordIntoMatrix(std::array<unsigned char, ARRAY_SIZE> &matrix, unsigned char *word, int ind) {
+		for(int i= 0; i < WORD_SIZE; i++) {
+			matrix[i*WORD_SIZE + ind] = word[i];
 		}
 		return FUNC_OK;
 	}
@@ -273,19 +272,19 @@
 
 		// Initial AddRoundKey
 		xorArray(inputVector, subKey);
-		std::cout << "State Matrix Round 0 :"<< std::endl;
+		std::cout << "***** Round 0 *****"<< std::endl;
 		printVector(inputVector);
 
 		// Intermediate and final rounds (10 for now, 128-bit key)
-		for (int i = 1; i < 2; i++) {
-			std::cout << "*** State Matrix Round " << int(i) << " ***" << std::endl;
-			printVector(inputVector);
+		for (int i = 1; i <= 10; i++) {
+			//std::cout << "*** State Matrix Round " << int(i) << " ***" << std::endl;
+			//printVector(inputVector);
 			subBytes(inputVector);
-			std::cout << "After subBytes" << std::endl;
-			printVector(inputVector);
+			//std::cout << "After subBytes" << std::endl;
+			//printVector(inputVector);
 			shiftRows(inputVector);
-			std::cout << "After shiftRows" << std::endl;
-			printVector(inputVector);
+			//std::cout << "After shiftRows" << std::endl;
+			//printVector(inputVector);
 			// Intermediate rounds
 			if (i < 10) {
 				mixColumns(inputVector);
@@ -295,12 +294,13 @@
 
 			getSubMatrix(subKey, m_expandedKey, m_expandedKeyWordSize, i*16);
 
-			//std::cout <<  "Subkey Round " << int(i) << std::endl;
-			//printSubkey(m_expandedKey, m_expandedKeyWordSize, i*4);
+			std::cout <<  "Subkey Round " << int(i) << std::endl;
+			printSubkey(m_expandedKey, m_expandedKeyWordSize, i*4);
 
 			xorArray(inputVector, subKey);
-			//std::cout << "*** Final State Matrix Round " << int(i) << " ***"<< std::endl;
-			//printVector(inputVector);
+
+			std::cout << "Final State Matrix Round " << int(i) << std::endl;
+			printVector(inputVector);
 		}
 		std::cout << "Ended" << std::endl;
 
