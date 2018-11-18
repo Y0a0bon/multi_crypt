@@ -9,6 +9,7 @@
 
 int test_AES();
 bool compareArray(unsigned char *input, unsigned char *output, int size);
+int test_AES_subBytes(AESEncryptor *aes_enc);
 int test_AES_shiftRows(AESEncryptor *aes_enc);
 int test_AES_mixColumns(AESEncryptor *aes_enc);
 int test_AES_getWordFromMatrix(AESEncryptor *aes_enc);
@@ -29,6 +30,8 @@ int test_AES()
 	unsigned char key[16] = {84, 115, 32, 103, 104, 32, 75, 32, 97, 109, 117, 70, 116, 121, 110, 117};
 	AESEncryptor *aes_enc = new AESEncryptor(key, 16);
 	
+	test_AES_subBytes(aes_enc);
+
 	test_AES_shiftRows(aes_enc);
 	test_AES_mixColumns(aes_enc);
 
@@ -43,7 +46,17 @@ int test_AES()
 
 int test_AES_subBytes(AESEncryptor *aes_enc)
 {
-	// TODO
+	unsigned char input[16] = {0x00, 0x3C, 0x6E, 0x4, 0x1F, 0x4E, 0x22, 0x74, 0x0E, 0x08, 0x1B, 0x31, 0x54, 0x59, 0x0B, 0x1A};
+	unsigned char output[16] = {0x63, 0xEB, 0x9F, 0xA0, 0xC0, 0x2F, 0x93, 0x92, 0xAB, 0x30, 0xAF, 0xC7, 0x20, 0xCB, 0x2B, 0xA2};
+	aes_enc->subBytes(input, 16);
+	if ( !compareArray(input, output, 16)) {
+		std::cout << "Test passed : subBytes" << std::endl;
+		return 0;
+	}
+	else {
+		std::cout << "Test failed : subBytes" << std::endl;
+		return 1;
+	}
 }
 
 int test_AES_shiftRows(AESEncryptor *aes_enc)

@@ -16,11 +16,9 @@
 		m_rounds = 11;
 		m_expandedKeyWordSize = 4 * m_rounds;
 		m_expandedKey = new unsigned char[4 * m_expandedKeyWordSize];
-		std::cout << "Key : " << std::endl;
-		printMatrix(m_key, 4, 4);
+		//std::cout << "Key : " << std::endl;
+		//printMatrix(m_key, 4, 4);
 		keyExpansionComplete();
-		std::cout << "Expanded key computing completed :" << std::endl;
-		//printMatrix(m_expandedKey, m_expandedKeyWordSize, 4);
 	}
 
 	// Destructor
@@ -75,6 +73,17 @@
 			tmp.clear();
 		}
 		return FUNC_OK;
+	}
+
+	int AESEncryptor::shiftRow(unsigned char *inputVector, int size) {
+		unsigned char tmp[size];
+		int i;
+		for (i = 0; i < size; i++) {
+			tmp[i] = inputVector[(i+1) % size];
+		}
+		for (i = 0; i < size; i++) {
+			inputVector[i] = tmp[i];
+		}
 	}
 
 	int AESEncryptor::shiftRows(unsigned char *inputVector, int size) {
@@ -237,7 +246,7 @@
 				// Compute rcon_i
 				if ((i % N) == 0) {
 					subBytes(W_i_1, 4);
-					shiftRows(W_i_1, 4);
+					shiftRow(W_i_1, 4);
 					xorArray(W_i_N, W_i_1, 4);
 					rcon[0] = rc[i/N];
 					xorArray(W_i_N, rcon, 4);
@@ -252,10 +261,11 @@
 				putWordIntoMatrix(m_expandedKey, W_i_N, m_expandedKeyWordSize, i);
 			}
 		}
-		std::cout << "Fisr Subkeys" << std::endl;
-		printSubkey(m_expandedKey, m_expandedKeyWordSize, 0);
-		printSubkey(m_expandedKey, m_expandedKeyWordSize, 4);
-		printSubkey(m_expandedKey, m_expandedKeyWordSize, 8);
+		std::cout << std::endl;
+		//std::cout << "First Subkeys" << std::endl;
+		//printSubkey(m_expandedKey, m_expandedKeyWordSize, 4);
+		//printSubkey(m_expandedKey, m_expandedKeyWordSize, 20);
+		//printSubkey(m_expandedKey, m_expandedKeyWordSize, 40);
 		return FUNC_OK;
 	}
 

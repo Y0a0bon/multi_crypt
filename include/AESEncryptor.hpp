@@ -25,6 +25,7 @@ class AESEncryptor
 	int subBytes(std::array<unsigned char, ARRAY_SIZE> &inputVector);
 	int subBytes(unsigned char *inputVector, int size);
 
+	int shiftRow(unsigned char *inputVector, int size);
 	int shiftRows(std::array<unsigned char, ARRAY_SIZE> &inputVector);
 	int shiftRows(unsigned char *inputVector, int size);
 	
