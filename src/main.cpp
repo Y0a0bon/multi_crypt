@@ -35,8 +35,8 @@ int test_AES()
 	test_AES_getWordFromMatrix(aes_enc);
 	test_AES_putWordIntoMatrix(aes_enc);
 	
-	test_AES_keyExpansionComplete();
-	test_AES_encryptBlock(aes_enc);
+	//test_AES_keyExpansionComplete();
+	//test_AES_encryptBlock(aes_enc);
 	
 	return 0;
 }
@@ -67,10 +67,9 @@ int test_AES_shiftRows(AESEncryptor *aes_enc)
 }
 
 int test_AES_mixColumns(AESEncryptor *aes_enc) {
-	std::array<unsigned char, 16> input = {5,4,1,2,5,3,6,1,4,5,1,2,2,0,3,1};
-	std::array<unsigned char, 16> output = {31,22,24,10,29,25,19,11,24,17,18,10,28,20,16,11};
+	std::array<unsigned char, 16> input = {0x63, 0xEB, 0x9F, 0xA0, 0x2F, 0x93, 0x92, 0xC0, 0xAF, 0xC7, 0xAB, 0x30, 0xA2, 0x20, 0xCB, 0x2B};
+	std::array<unsigned char, 16> output = {0xBA, 0x84, 0xE8, 0x1B, 0x75, 0xA4, 0x8D, 0x40, 0xF4, 0x8D, 0x06, 0x7D, 0x7A, 0x32, 0x0E, 0x5D};
 	aes_enc->mixColumns(input);
-	printVector(input);
 	if (input == output) {
 		std::cout << "Test passed : mixColumns" << std::endl;
 		return 0;

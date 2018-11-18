@@ -252,7 +252,10 @@
 				putWordIntoMatrix(m_expandedKey, W_i_N, m_expandedKeyWordSize, i);
 			}
 		}
-		
+		std::cout << "Fisr Subkeys" << std::endl;
+		printSubkey(m_expandedKey, m_expandedKeyWordSize, 0);
+		printSubkey(m_expandedKey, m_expandedKeyWordSize, 4);
+		printSubkey(m_expandedKey, m_expandedKeyWordSize, 8);
 		return FUNC_OK;
 	}
 
