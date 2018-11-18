@@ -39,7 +39,7 @@ int test_AES()
 	test_AES_putWordIntoMatrix(aes_enc);
 	
 	//test_AES_keyExpansionComplete();
-	//test_AES_encryptBlock(aes_enc);
+	test_AES_encryptBlock(aes_enc);
 	
 	return 0;
 }
@@ -141,9 +141,8 @@ int test_AES_putWordIntoMatrix(AESEncryptor *aes_enc) {
 }
 
 int test_AES_keyExpansionComplete() {
-	//unsigned char expandedKey[aes_enc->getExpandedKeySize];
 	unsigned char expandedKey[16];
-	unsigned char output[16] = {226, 145, 177, 214, 50, 18, 89, 121, 252, 145, 228, 162, 241, 136, 230, 147};
+	unsigned char output[16] = {0x28, 0xFD, 0xDE, 0xF8, 0x6D, 0xA4, 0x24, 0x4A, 0xCC, 0xC0, 0xA4, 0xFE, 0x3B, 0x31, 0x6F, 0x26};
 	if(compareArray(expandedKey, output, 16)) {
 		std::cout << "Test passed : keyExpansion" << std::endl;
 		return 0;
@@ -152,14 +151,20 @@ int test_AES_keyExpansionComplete() {
 		std::cout << "Test failed : keyExpansion" << std::endl;
 		return 1;
 	}
-	return 1;
 }
 
 int test_AES_encryptBlock(AESEncryptor *aes_enc) {
-	//std::array<unsigned char, 16> input = {84, 119, 111, 32, 79, 110, 101, 32, 78, 105, 110, 101, 32, 84, 119, 111};
-	std::array<unsigned char, 16> input = {84, 79, 78, 32, 119, 110, 105, 84, 111, 101, 110, 119, 32, 32, 101, 111};
+	std::array<unsigned char, 16> input = {0x54, 0x4F, 0x4E, 0x20, 0x77, 0x6E, 0x69, 0x54, 0x6F, 0x65, 0x6E, 0x77, 0x20, 0x20, 0x65, 0x6F};
+	std::array<unsigned char, 16> output = {0x29, 0x57, 0x40, 0x1A, 0xC3, 0x14, 0x22, 0x02, 0x50, 0x20, 0x99, 0xD7, 0x5F, 0xF6, 0xB3, 0x3A};
 	aes_enc->encryptBlock(input);
-	return 0;
+	if(input == output) {
+		std::cout << "Test passed : encryptBlock" << std::endl;
+		return 0;
+	}
+	else {
+		std::cout << "Test failed : encryptBlock" << std::endl;
+		return 1;
+	}
 }
 
 int test_RSA()

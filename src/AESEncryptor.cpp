@@ -16,8 +16,6 @@
 		m_rounds = 11;
 		m_expandedKeyWordSize = 4 * m_rounds;
 		m_expandedKey = new unsigned char[4 * m_expandedKeyWordSize];
-		//std::cout << "Key : " << std::endl;
-		//printMatrix(m_key, 4, 4);
 		keyExpansionComplete();
 	}
 
@@ -262,10 +260,6 @@
 			}
 		}
 		std::cout << std::endl;
-		//std::cout << "First Subkeys" << std::endl;
-		//printSubkey(m_expandedKey, m_expandedKeyWordSize, 4);
-		//printSubkey(m_expandedKey, m_expandedKeyWordSize, 20);
-		//printSubkey(m_expandedKey, m_expandedKeyWordSize, 40);
 		return FUNC_OK;
 	}
 
@@ -276,46 +270,40 @@
 		
 		unsigned char subKey[ARRAY_SIZE];
 		
-		std::cout << "Input data :"<< std::endl;
-		printVector(inputVector);
+		//std::cout << "***** Round 0 *****"<< std::endl;
+		//std::cout << "Input data :"<< std::endl;
+		//printVector(inputVector);
 		
-		std::cout << "First subkey :" << std::endl;
 		getSubMatrix(subKey, m_expandedKey, m_expandedKeyWordSize, 0);
-		printVector(subKey, ARRAY_SIZE);
+		//std::cout << "First subkey :" << std::endl;
+		//printVector(subKey, ARRAY_SIZE);
 
 		// Initial AddRoundKey
 		xorArray(inputVector, subKey);
-		std::cout << "***** Round 0 *****"<< std::endl;
-		printVector(inputVector);
+		//printVector(inputVector);
 
 		// Intermediate and final rounds (10 for now, 128-bit key)
 		for (int i = 1; i <= 10; i++) {
-			//std::cout << "*** State Matrix Round " << int(i) << " ***" << std::endl;
-			//printVector(inputVector);
+			//std::cout << "***** Round " << int(i) << " *****" << std::endl;
 			subBytes(inputVector);
-			//std::cout << "After subBytes" << std::endl;
-			//printVector(inputVector);
 			shiftRows(inputVector);
-			//std::cout << "After shiftRows" << std::endl;
-			//printVector(inputVector);
-			// Intermediate rounds
 			if (i < 10) {
 				mixColumns(inputVector);
-				std::cout << "After mixColumns" << std::endl;
-				printVector(inputVector);
 			}
 
-			getSubMatrix(subKey, m_expandedKey, m_expandedKeyWordSize, i*16);
+			//std::cout << "State Matrix" << std::endl;
+			//printVector(inputVector);
+			
+			getSubMatrix(subKey, m_expandedKey, m_expandedKeyWordSize, i*4);
 
-			std::cout <<  "Subkey Round " << int(i) << std::endl;
-			printSubkey(m_expandedKey, m_expandedKeyWordSize, i*4);
+			//std::cout <<  "Subkey Round " << int(i) << std::endl;
+			//printSubkey(m_expandedKey, m_expandedKeyWordSize, i*4);
 
 			xorArray(inputVector, subKey);
 
-			std::cout << "Final State Matrix Round " << int(i) << std::endl;
-			printVector(inputVector);
+			//std::cout << "Final State Matrix Round " << int(i) << std::endl;
+			//printVector(inputVector);
 		}
-		std::cout << "Ended" << std::endl;
 
 		return FUNC_OK;
 	}
