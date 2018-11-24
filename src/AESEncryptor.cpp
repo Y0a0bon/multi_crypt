@@ -54,6 +54,17 @@
 		return FUNC_OK;
 	}
 
+	int AESEncryptor::shiftRow(unsigned char *inputVector, int size) {
+		unsigned char tmp[size];
+		int i;
+		for (i = 0; i < size; i++) {
+			tmp[i] = inputVector[(i+1) % size];
+		}
+		for (i = 0; i < size; i++) {
+			inputVector[i] = tmp[i];
+		}
+	}
+
 	// Show off use od deque and std::array
 	// But is it really necesary ?
 	int AESEncryptor::shiftRows(std::array<unsigned char, ARRAY_SIZE> &inputVector){
@@ -73,17 +84,6 @@
 		return FUNC_OK;
 	}
 
-	int AESEncryptor::shiftRow(unsigned char *inputVector, int size) {
-		unsigned char tmp[size];
-		int i;
-		for (i = 0; i < size; i++) {
-			tmp[i] = inputVector[(i+1) % size];
-		}
-		for (i = 0; i < size; i++) {
-			inputVector[i] = tmp[i];
-		}
-	}
-
 	int AESEncryptor::shiftRows(unsigned char *inputVector, int size) {
 		unsigned char tmp[size];
 		int i, j;
@@ -95,7 +95,7 @@
 		for (i = 0; i < size; i++) {
 			inputVector[i] = tmp[i];
 		}
-
+		return FUNC_OK;
 	}
 
 	int AESEncryptor::mixColumnsWord(unsigned char *multiplicator, unsigned char *word) {

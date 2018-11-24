@@ -22,8 +22,8 @@ class AESEncryptor
 	int getExpandedKeySize();
 	void getExpandedKey(unsigned char *tmp);
 
-	int subBytes(std::array<unsigned char, ARRAY_SIZE> &inputVector);
-	int subBytes(unsigned char *inputVector, int size);
+	int invSubBytes(std::array<unsigned char, ARRAY_SIZE> &inputVector);
+	int invSubBytes(unsigned char *inputVector, int size);
 
 	int shiftRow(unsigned char *inputVector, int size);
 	int shiftRows(std::array<unsigned char, ARRAY_SIZE> &inputVector);
