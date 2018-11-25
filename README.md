@@ -5,9 +5,11 @@
 ***********************
 Latest Updates :
 
+* v 0.3 : AES-128bit encrypting 
+
 * v 0.2.0 : Added root functions for AES encryption algorithm (subBytes/shiftRows/mixColumns) with tests
 
-* v 0.1.4 : Implements RSA encrypting on SMALL numbers (unsigned long). GMP library use is coming soon.
+* v 0.1.4 : Implements RSA encrypting on SMALL numbers (unsigned long). GMP library use to be added later
 
 ***********************
 Infos :
