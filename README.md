@@ -5,11 +5,24 @@
 ***********************
 Latest Updates :
 
-* v 0.4.1 : AES-128bit algorithm 
+* v 0.4.1 : AES-128bit algorithm (raw byte data) 
 
 * v 0.2.0 : Added root functions for AES encryption algorithm (subBytes/shiftRows/mixColumns) with tests
 
 * v 0.1.4 : Implements RSA encrypting on SMALL numbers (unsigned long). GMP library use to be added later
+
+***********************
+Next Updates :
+
+* Handling file encryption
+
+* Google Drive API integration
+
+* Support for AES-256
+
+* Support for signing algorithm (ECDSA)
+
+* Support for one post-quantum cryptographic algorithm
 
 ***********************
 Infos :
