@@ -5,6 +5,7 @@
 #include "RSA_algorithm.hpp"
 #include "RSA_key.hpp"
 #include "AESEncryptor.hpp"
+#include "AESDecryptor.hpp"
 #include "AESTools.hpp"
 
 bool compareArray(unsigned char *input, unsigned char *output, int size);
@@ -17,21 +18,25 @@ int test_AES_putWordIntoMatrix(AESEncryptor *aes_enc);
 int test_AES_keyExpansionComplete(AESEncryptor *aes_enc);
 int test_AES_encryptBlock(AESEncryptor *aes_enc);
 int test_AESDecryption();
-int test_AES_invSubBytes(AESEncryptor *aes_enc);
-int test_AES_invShiftRows(AESEncryptor *aes_enc);
-int test_AES_invMixColumns(AESEncryptor *aes_enc);
-int test_AES_decryptBlock(AESEncryptor *aes_enc);
+int test_AES_invSubBytes(AESDecryptor *aes_dec);
+int test_AES_invShiftRows(AESDecryptor *aes_dec);
+int test_AES_invMixColumns(AESDecryptor *aes_dec);
+int test_AES_decryptBlock(AESDecryptor *aes_dec);
 int test_RSA();
 
 int main()
 {
 	
 	test_AESEncryption();
+	test_AESDecryption();
 	return 0;
 }
 
+// ********************* AES Encryption tests *********************
+
 int test_AESEncryption()
 {
+	std::cout << "Testing AES encryption ..." << std::endl;
 	unsigned char key[16] = {84, 115, 32, 103, 104, 32, 75, 32, 97, 109, 117, 70, 116, 121, 110, 117};
 	AESEncryptor *aes_enc = new AESEncryptor(key, 16);
 	
@@ -49,27 +54,13 @@ int test_AESEncryption()
 	return 0;
 }
 
-int test_AESDecryption()
-{
-	unsigned char key[16] = {84, 115, 32, 103, 104, 32, 75, 32, 97, 109, 117, 70, 116, 121, 110, 117};
-	AESEncryptor *aes_enc = new AESEncryptor(key, 16);
-	
-	test_AES_subBytes(aes_enc);
-
-	test_AES_shiftRows(aes_enc);
-	//test_AES_mixColumns(aes_enc);
-
-	//test_AES_decryptBlock(aes_enc);
-	
-	return 0;
-}
-
 int test_AES_subBytes(AESEncryptor *aes_enc)
 {
-	unsigned char input[16] = {0x00, 0x3C, 0x6E, 0x4, 0x1F, 0x4E, 0x22, 0x74, 0x0E, 0x08, 0x1B, 0x31, 0x54, 0x59, 0x0B, 0x1A};
+	unsigned char input[16] = {0x00, 0x3C, 0x6E, 0x47, 0x1F, 0x4E, 0x22, 0x74, 0x0E, 0x08, 0x1B, 0x31, 0x54, 0x59, 0x0B, 0x1A};
 	unsigned char output[16] = {0x63, 0xEB, 0x9F, 0xA0, 0xC0, 0x2F, 0x93, 0x92, 0xAB, 0x30, 0xAF, 0xC7, 0x20, 0xCB, 0x2B, 0xA2};
 	aes_enc->subBytes(input, 16);
-	if ( !compareArray(input, output, 16)) {
+	printMatrix(input,4,4);
+	if (compareArray(input, output, 16)) {
 		std::cout << "Test passed : subBytes" << std::endl;
 		return 0;
 	}
@@ -89,7 +80,7 @@ int test_AES_shiftRows(AESEncryptor *aes_enc)
 	aes_enc->shiftRows(input);
 	aes_enc->shiftRows(input_v, 16);
 
-	if ((input == output) || !compareArray(input_v, output_v, 16)) {
+	if ((input == output) && compareArray(input_v, output_v, 16)) {
 		std::cout << "Test passed : shiftRows" << std::endl;
 		return 0;
 	}
@@ -188,42 +179,65 @@ int test_AES_encryptBlock(AESEncryptor *aes_enc) {
 	}
 }
 
+// ********************* AES Decryption tests *********************
+
+int test_AESDecryption()
+{
+	std::cout << "Testing AES decryption ..." << std::endl;
+	unsigned char key[16] = {84, 115, 32, 103, 104, 32, 75, 32, 97, 109, 117, 70, 116, 121, 110, 117};
+	AESDecryptor *aes_dec = new AESDecryptor(key, 16);
+	
+	test_AES_invSubBytes(aes_dec);
+
+	test_AES_invShiftRows(aes_dec);
+	//test_AES_mixColumns(aes_dec);
+
+	//test_AES_decryptBlock(aes_dec);
+	
+	return 0;
+}
+
 // FIXME
-int test_AES_invSubBytes(AESEncryptor *aes_enc)
+int test_AES_invSubBytes(AESDecryptor *aes_dec)
 {
 	unsigned char input[16] = {0x00, 0x3C, 0x6E, 0x4, 0x1F, 0x4E, 0x22, 0x74, 0x0E, 0x08, 0x1B, 0x31, 0x54, 0x59, 0x0B, 0x1A};
 	unsigned char output[16] = {0x63, 0xEB, 0x9F, 0xA0, 0xC0, 0x2F, 0x93, 0x92, 0xAB, 0x30, 0xAF, 0xC7, 0x20, 0xCB, 0x2B, 0xA2};
-	aes_enc->subBytes(input, 16);
-	if ( !compareArray(input, output, 16)) {
-		std::cout << "Test passed : subBytes" << std::endl;
+	printMatrix(input,4,4);
+	aes_dec->invSubBytes(input, 16);
+	printMatrix(input,4,4);
+	if ( compareArray(input, output, 16)) {
+		std::cout << "Test passed : invSubBytes" << std::endl;
 		return 0;
 	}
 	else {
-		std::cout << "Test failed : subBytes" << std::endl;
+		std::cout << "Test failed : invSubBytes" << std::endl;
 		return 1;
 	}
 }
 
-// FIXME
-int test_AES_invShiftRows(AESEncryptor *aes_enc)
+int test_AES_invShiftRows(AESDecryptor *aes_dec)
 {
 	std::array<unsigned char, 16> input = {0,1,2,3,0,1,2,3,0,1,2,3,0,1,2,3};
-	std::array<unsigned char, 16> output = {0,1,2,3,1,2,3,0,2,3,0,1,3,0,1,2};
+	std::array<unsigned char, 16> output = {0,1,2,3,3,0,1,2,2,3,0,1,1,2,3,0};
 	unsigned char input_v[16] = {0,1,2,3,0,1,2,3,0,1,2,3,0,1,2,3};
-	unsigned char output_v[16] = {0,1,2,3,1,2,3,0,2,3,0,1,3,0,1,2};
+	unsigned char output_v[16] = {0,1,2,3,3,0,1,2,2,3,0,1,1,2,3,0};
 
-	aes_enc->shiftRows(input);
-	aes_enc->shiftRows(input_v, 16);
+	aes_dec->invShiftRows(input);
+	aes_dec->invShiftRows(input_v, 16);
+	printVector(input);
+	printMatrix(input_v,4,4);
 
-	if ((input == output) || !compareArray(input_v, output_v, 16)) {
-		std::cout << "Test passed : shiftRows" << std::endl;
+	if ((input == output) && compareArray(input_v, output_v, 16)) {
+		std::cout << "Test passed : invShiftRows" << std::endl;
 		return 0;
 	}
 	else {
-		std::cout << "Test failed : shiftRows" << std::endl;
+		std::cout << "Test failed : invShiftRows" << std::endl;
 		return 1;
 	}
 }
+
+// ********************* RSA Encryption tests *********************
 
 int test_RSA()
 {

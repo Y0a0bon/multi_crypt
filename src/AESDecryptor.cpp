@@ -21,7 +21,7 @@
 	}
 
 
-	int invSubBytes(std::array<unsigned char, ARRAY_SIZE> &inputVector) {
+	int AESDecryptor::invSubBytes(std::array<unsigned char, ARRAY_SIZE> &inputVector) {
 		if (inputVector.empty())
 			return INPUT_ERROR;
 		for (int i = 0 ; i < inputVector.size(); i++){
@@ -30,7 +30,7 @@
 		return FUNC_OK;
 	}
 
-	int invSubBytes(unsigned char *inputVector, int size) {
+	int AESDecryptor::invSubBytes(unsigned char *inputVector, int size) {
 		if (inputVector == nullptr)
 			return INPUT_ERROR;
 		for (int i = 0 ; i < size; i++){
@@ -40,7 +40,7 @@
 	}
 
 
-	int invShiftRow(unsigned char *inputVector, int size) {
+	int AESDecryptor::invShiftRow(unsigned char *inputVector, int size) {
 		unsigned char tmp[size];
 		int i;
 		for (i = 0; i < size; i++) {
@@ -49,9 +49,10 @@
 		for (i = 0; i < size; i++) {
 			inputVector[i] = tmp[i];
 		}
+		return FUNC_OK;
 	}
 
-	int invShiftRows(std::array<unsigned char, ARRAY_SIZE> &inputVector) {
+	int AESDecryptor::invShiftRows(std::array<unsigned char, ARRAY_SIZE> &inputVector) {
 		std::deque<unsigned char> tmp;
 		int ind = 0;
 		for (int i = 0; i < 4; i++) {
@@ -68,7 +69,7 @@
 		return FUNC_OK;
 	}
 
-	int invShiftRows(unsigned char *inputVector, int size) {
+	int AESDecryptor::invShiftRows(unsigned char *inputVector, int size) {
 		unsigned char tmp[size];
 		int i, j;
 		for (i = 0; i < sqrt(size); i++) {
@@ -79,12 +80,17 @@
 		for (i = 0; i < size; i++) {
 			inputVector[i] = tmp[i];
 		}
-
+		return FUNC_OK;
 	}
 
 	
-	int invMixColumnsWord(unsigned char *multiplicator, unsigned char *word); 
-	int invMixColumns(std::array<unsigned char, ARRAY_SIZE> &inputVector);
+	int AESDecryptor::invMixColumnsWord(unsigned char *multiplicator, unsigned char *word) {
+		return NOT_IMPLEMENTED;
+	}
+
+	int AESDecryptor::invMixColumns(std::array<unsigned char, ARRAY_SIZE> &inputVector) {
+		return NOT_IMPLEMENTED;
+	}
 	
 
 
