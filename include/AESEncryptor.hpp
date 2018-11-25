@@ -20,7 +20,7 @@ class AESEncryptor
 
 	// Methods
 	int getExpandedKeySize();
-	void getExpandedKey(unsigned char *tmp);
+	int getSubkey(unsigned char *tmp, int ind);
 
 	int subBytes(std::array<unsigned char, ARRAY_SIZE> &inputVector);
 	int subBytes(unsigned char *inputVector, int size);
