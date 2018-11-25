@@ -5,7 +5,7 @@
 ***********************
 Latest Updates :
 
-* v 0.3 : AES-128bit encrypting 
+* v 0.4.1 : AES-128bit algorithm 
 
 * v 0.2.0 : Added root functions for AES encryption algorithm (subBytes/shiftRows/mixColumns) with tests
 
