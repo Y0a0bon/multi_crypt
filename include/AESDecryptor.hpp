@@ -18,15 +18,15 @@ class AESDecryptor
 	// Destructor
 	~AESDecryptor();
 
-	int subBytes(std::array<unsigned char, ARRAY_SIZE> &inputVector);
-	int subBytes(unsigned char *inputVector, int size);
+	int invSubBytes(std::array<unsigned char, ARRAY_SIZE> &inputVector);
+	int invSubBytes(unsigned char *inputVector, int size);
 
-	int shiftRow(unsigned char *inputVector, int size);
-	int shiftRows(std::array<unsigned char, ARRAY_SIZE> &inputVector);
-	int shiftRows(unsigned char *inputVector, int size);
+	int invShiftRow(unsigned char *inputVector, int size);
+	int invShiftRows(std::array<unsigned char, ARRAY_SIZE> &inputVector);
+	int invShiftRows(unsigned char *inputVector, int size);
 	
-	int mixColumnsWord(unsigned char *multiplicator, unsigned char *word); 
-	int mixColumns(std::array<unsigned char, ARRAY_SIZE> &inputVector);
+	int invMixColumnsWord(unsigned char *multiplicator, unsigned char *word); 
+	int invMixColumns(std::array<unsigned char, ARRAY_SIZE> &inputVector);
 	
 	private :
 	
@@ -39,5 +39,6 @@ class AESDecryptor
 	unsigned int m_expandedKeyWordSize;
 	unsigned int m_rounds;
 
-}
+};
+
 #endif

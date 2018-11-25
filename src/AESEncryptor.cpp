@@ -29,9 +29,12 @@
 		return (4*int(m_expandedKeyWordSize));
 	}
 
-	void AESEncryptor::getExpandedKey(unsigned char *tmp) {
-		for (int i = 0; i < 4*m_expandedKeyWordSize; i++)
-			tmp[i] = m_expandedKey[i];
+	int AESEncryptor::getSubkey(unsigned char *tmp, int ind) {
+		if (ind > 11) {
+			return INPUT_ERROR;
+		}
+		getSubMatrix(tmp, m_expandedKey, m_expandedKeyWordSize, ind*4);
+		return FUNC_OK;
 	}
 
 	// SubBytes

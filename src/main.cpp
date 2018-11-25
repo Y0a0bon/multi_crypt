@@ -7,25 +7,30 @@
 #include "AESEncryptor.hpp"
 #include "AESTools.hpp"
 
-int test_AES();
 bool compareArray(unsigned char *input, unsigned char *output, int size);
+int test_AESEncryption();
 int test_AES_subBytes(AESEncryptor *aes_enc);
 int test_AES_shiftRows(AESEncryptor *aes_enc);
 int test_AES_mixColumns(AESEncryptor *aes_enc);
 int test_AES_getWordFromMatrix(AESEncryptor *aes_enc);
 int test_AES_putWordIntoMatrix(AESEncryptor *aes_enc);
-int test_AES_keyExpansionComplete();
+int test_AES_keyExpansionComplete(AESEncryptor *aes_enc);
 int test_AES_encryptBlock(AESEncryptor *aes_enc);
+int test_AESDecryption();
+int test_AES_invSubBytes(AESEncryptor *aes_enc);
+int test_AES_invShiftRows(AESEncryptor *aes_enc);
+int test_AES_invMixColumns(AESEncryptor *aes_enc);
+int test_AES_decryptBlock(AESEncryptor *aes_enc);
 int test_RSA();
 
 int main()
 {
 	
-	test_AES();
+	test_AESEncryption();
 	return 0;
 }
 
-int test_AES()
+int test_AESEncryption()
 {
 	unsigned char key[16] = {84, 115, 32, 103, 104, 32, 75, 32, 97, 109, 117, 70, 116, 121, 110, 117};
 	AESEncryptor *aes_enc = new AESEncryptor(key, 16);
@@ -38,8 +43,23 @@ int test_AES()
 	test_AES_getWordFromMatrix(aes_enc);
 	test_AES_putWordIntoMatrix(aes_enc);
 	
-	//test_AES_keyExpansionComplete();
+	test_AES_keyExpansionComplete(aes_enc);
 	test_AES_encryptBlock(aes_enc);
+	
+	return 0;
+}
+
+int test_AESDecryption()
+{
+	unsigned char key[16] = {84, 115, 32, 103, 104, 32, 75, 32, 97, 109, 117, 70, 116, 121, 110, 117};
+	AESEncryptor *aes_enc = new AESEncryptor(key, 16);
+	
+	test_AES_subBytes(aes_enc);
+
+	test_AES_shiftRows(aes_enc);
+	//test_AES_mixColumns(aes_enc);
+
+	//test_AES_decryptBlock(aes_enc);
 	
 	return 0;
 }
@@ -140,9 +160,10 @@ int test_AES_putWordIntoMatrix(AESEncryptor *aes_enc) {
 	}
 }
 
-int test_AES_keyExpansionComplete() {
+int test_AES_keyExpansionComplete(AESEncryptor *aes_enc) {
 	unsigned char expandedKey[16];
-	unsigned char output[16] = {0x28, 0xFD, 0xDE, 0xF8, 0x6D, 0xA4, 0x24, 0x4A, 0xCC, 0xC0, 0xA4, 0xFE, 0x3B, 0x31, 0x6F, 0x26};
+	unsigned char output[16] = {0x28, 0x6D, 0xCC, 0x3B, 0xFD, 0xA4, 0xC0, 0x31, 0xDE, 0x24, 0xA4, 0x6F, 0xF8, 0x4A, 0xFE, 0x26};
+	aes_enc->getSubkey(expandedKey, 10); // 11th key, so last subkey
 	if(compareArray(expandedKey, output, 16)) {
 		std::cout << "Test passed : keyExpansion" << std::endl;
 		return 0;
@@ -163,6 +184,43 @@ int test_AES_encryptBlock(AESEncryptor *aes_enc) {
 	}
 	else {
 		std::cout << "Test failed : encryptBlock" << std::endl;
+		return 1;
+	}
+}
+
+// FIXME
+int test_AES_invSubBytes(AESEncryptor *aes_enc)
+{
+	unsigned char input[16] = {0x00, 0x3C, 0x6E, 0x4, 0x1F, 0x4E, 0x22, 0x74, 0x0E, 0x08, 0x1B, 0x31, 0x54, 0x59, 0x0B, 0x1A};
+	unsigned char output[16] = {0x63, 0xEB, 0x9F, 0xA0, 0xC0, 0x2F, 0x93, 0x92, 0xAB, 0x30, 0xAF, 0xC7, 0x20, 0xCB, 0x2B, 0xA2};
+	aes_enc->subBytes(input, 16);
+	if ( !compareArray(input, output, 16)) {
+		std::cout << "Test passed : subBytes" << std::endl;
+		return 0;
+	}
+	else {
+		std::cout << "Test failed : subBytes" << std::endl;
+		return 1;
+	}
+}
+
+// FIXME
+int test_AES_invShiftRows(AESEncryptor *aes_enc)
+{
+	std::array<unsigned char, 16> input = {0,1,2,3,0,1,2,3,0,1,2,3,0,1,2,3};
+	std::array<unsigned char, 16> output = {0,1,2,3,1,2,3,0,2,3,0,1,3,0,1,2};
+	unsigned char input_v[16] = {0,1,2,3,0,1,2,3,0,1,2,3,0,1,2,3};
+	unsigned char output_v[16] = {0,1,2,3,1,2,3,0,2,3,0,1,3,0,1,2};
+
+	aes_enc->shiftRows(input);
+	aes_enc->shiftRows(input_v, 16);
+
+	if ((input == output) || !compareArray(input_v, output_v, 16)) {
+		std::cout << "Test passed : shiftRows" << std::endl;
+		return 0;
+	}
+	else {
+		std::cout << "Test failed : shiftRows" << std::endl;
 		return 1;
 	}
 }

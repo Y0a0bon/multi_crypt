@@ -20,10 +20,10 @@ class AESEncryptor
 
 	// Methods
 	int getExpandedKeySize();
-	void getExpandedKey(unsigned char *tmp);
+	int getSubkey(unsigned char *tmp, int ind);
 
-	int invSubBytes(std::array<unsigned char, ARRAY_SIZE> &inputVector);
-	int invSubBytes(unsigned char *inputVector, int size);
+	int subBytes(std::array<unsigned char, ARRAY_SIZE> &inputVector);
+	int subBytes(unsigned char *inputVector, int size);
 
 	int shiftRow(unsigned char *inputVector, int size);
 	int shiftRows(std::array<unsigned char, ARRAY_SIZE> &inputVector);
