@@ -170,7 +170,6 @@
 				putWordIntoMatrix(m_expandedKey, W_i_N, m_expandedKeyWordSize, i);
 			}
 		}
-		std::cout << std::endl;
 		return FUNC_OK;
 	}
 

@@ -57,7 +57,7 @@
 		int ind = 0;
 		for (int i = 0; i < 4; i++) {
 			for (int j = 0; j < 4; j++) {
-				tmp.push_back(inputVector[i*4 + ((i+j+2)  % 4)]);
+				tmp.push_back(inputVector[i*4 + ((4-i+j)  % 4)]);
 			}
 			for (int e : tmp) {
 				inputVector[i*4 + ind] = e;
@@ -74,7 +74,7 @@
 		int i, j;
 		for (i = 0; i < sqrt(size); i++) {
 			for(j = 0; j < sqrt(size); j++) {
-				tmp[int(i*sqrt(size)) + j] = inputVector[int(i*sqrt(size)) + ((i+j+2) % size)];
+				tmp[int(i*sqrt(size)) + j] = inputVector[int(i*sqrt(size)) + ((4-i+j) % size)];
 			}
 		}
 		for (i = 0; i < size; i++) {
