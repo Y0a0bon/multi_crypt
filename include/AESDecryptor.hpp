@@ -27,6 +27,18 @@ class AESDecryptor
 	
 	int invMixColumnsWord(unsigned char *multiplicator, unsigned char *word); 
 	int invMixColumns(std::array<unsigned char, ARRAY_SIZE> &inputVector);
+
+
+	int xorArray(std::array<unsigned char, ARRAY_SIZE> &inputVector, unsigned char *subKey);
+	int xorArray(unsigned char *inputVector, unsigned char *subKey, int size);
+	int copyArray(unsigned char *dest, unsigned char *src, int size);
+	int copyArrayToColumn(unsigned char *dest, unsigned char *src, int size, int ind);
+	int copyColumnToArray(unsigned char *dest, unsigned char *src, int size, int ind);
+	int getWordFromMatrix(unsigned char *word, unsigned char *matrix, int columns, int ind);
+	int getWordFromMatrix(unsigned char *word, std::array<unsigned char, ARRAY_SIZE> &matrix, int ind);
+	int putWordIntoMatrix(unsigned char *matrix, unsigned char *word, int columns, int ind);
+	int putWordIntoMatrix(std::array<unsigned char, ARRAY_SIZE> &matrix, unsigned char *word, int ind);
+	int getSubMatrix(unsigned char *dest, unsigned char *src, int columns, int ind);
 	
 	private :
 	

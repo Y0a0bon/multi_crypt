@@ -1,5 +1,4 @@
 // AESEncryptor.cpp
-// See https://kavaliro.com/wp-content/uploads/2014/03/AES.pdf
 
 #include <iostream>
 #include <cstring>
@@ -136,6 +135,90 @@
 		return FUNC_OK;
 	}
 
+	int AESEncryptor::keyExpansionComplete() {
+		int N = m_keySize / 4;
+		unsigned char W_i_N[WORD_SIZE], W_i_1[WORD_SIZE], wordBuffer[WORD_SIZE];
+
+		unsigned char rc[11] = {0, 1, 2, 4, 8, 16, 32, 64, 128, 27, 54};
+		unsigned char rcon[WORD_SIZE] = {0, 0, 0, 0};
+		
+		for (int i = 0; i < m_expandedKeyWordSize; i++) {
+			// Round 0 is original key
+			if (i < N) {
+				getWordFromMatrix(wordBuffer, m_key, WORD_SIZE, i);
+				putWordIntoMatrix(m_expandedKey, wordBuffer, m_expandedKeyWordSize, i);
+			}
+			else {
+				// Compute W_(i-N) and W_(i-1)
+				getWordFromMatrix(W_i_N, m_expandedKey, m_expandedKeyWordSize, i - N);
+				getWordFromMatrix(W_i_1, m_expandedKey, m_expandedKeyWordSize, i - 1);
+				// Compute rcon_i
+				if ((i % N) == 0) {
+					subBytes(W_i_1, 4);
+					shiftRow(W_i_1, 4);
+					xorArray(W_i_N, W_i_1, 4);
+					rcon[0] = rc[i/N];
+					xorArray(W_i_N, rcon, 4);
+				}
+				// Only in AES-256 mode
+				else if (N > 6 && (i % N) == 4) {
+					// TO DO
+				}
+				else {
+					xorArray(W_i_N, W_i_1, 4);
+				}
+				putWordIntoMatrix(m_expandedKey, W_i_N, m_expandedKeyWordSize, i);
+			}
+		}
+		std::cout << std::endl;
+		return FUNC_OK;
+	}
+
+	int AESEncryptor::encryptBlock(std::array<unsigned char, ARRAY_SIZE> &inputVector) {
+		if (m_keySize != 16) {
+			return INPUT_ERROR;
+		}
+		
+		unsigned char subKey[ARRAY_SIZE];
+		
+		//std::cout << "***** Round 0 *****"<< std::endl;
+		//std::cout << "Input data :"<< std::endl;
+		//printVector(inputVector);
+		
+		getSubMatrix(subKey, m_expandedKey, m_expandedKeyWordSize, 0);
+		//std::cout << "First subkey :" << std::endl;
+		//printVector(subKey, ARRAY_SIZE);
+
+		// Initial AddRoundKey
+		xorArray(inputVector, subKey);
+		//printVector(inputVector);
+
+		// Intermediate and final rounds (10 for now, 128-bit key)
+		for (int i = 1; i <= 10; i++) {
+			//std::cout << "***** Round " << int(i) << " *****" << std::endl;
+			subBytes(inputVector);
+			shiftRows(inputVector);
+			if (i < 10) {
+				mixColumns(inputVector);
+			}
+
+			//std::cout << "State Matrix" << std::endl;
+			//printVector(inputVector);
+			
+			getSubMatrix(subKey, m_expandedKey, m_expandedKeyWordSize, i*4);
+
+			//std::cout <<  "Subkey Round " << int(i) << std::endl;
+			//printSubkey(m_expandedKey, m_expandedKeyWordSize, i*4);
+
+			xorArray(inputVector, subKey);
+
+			//std::cout << "Final State Matrix Round " << int(i) << std::endl;
+			//printVector(inputVector);
+		}
+
+		return FUNC_OK;
+	}
+
 	// FIXME Verify size of both inputs ?
 	int AESEncryptor::xorArray(std::array<unsigned char, ARRAY_SIZE> &inputVector, unsigned char *subKey){
 		for (int i = 0; i < ARRAY_SIZE; i++) {
@@ -224,90 +307,6 @@
 				dest[i*WORD_SIZE + j] = src[i*columns + ind + j];
 			}
 		}
-		return FUNC_OK;
-	}
-
-	int AESEncryptor::keyExpansionComplete() {
-		int N = m_keySize / 4;
-		unsigned char W_i_N[WORD_SIZE], W_i_1[WORD_SIZE], wordBuffer[WORD_SIZE];
-
-		unsigned char rc[11] = {0, 1, 2, 4, 8, 16, 32, 64, 128, 27, 54};
-		unsigned char rcon[WORD_SIZE] = {0, 0, 0, 0};
-		
-		for (int i = 0; i < m_expandedKeyWordSize; i++) {
-			// Round 0 is original key
-			if (i < N) {
-				getWordFromMatrix(wordBuffer, m_key, WORD_SIZE, i);
-				putWordIntoMatrix(m_expandedKey, wordBuffer, m_expandedKeyWordSize, i);
-			}
-			else {
-				// Compute W_(i-N) and W_(i-1)
-				getWordFromMatrix(W_i_N, m_expandedKey, m_expandedKeyWordSize, i - N);
-				getWordFromMatrix(W_i_1, m_expandedKey, m_expandedKeyWordSize, i - 1);
-				// Compute rcon_i
-				if ((i % N) == 0) {
-					subBytes(W_i_1, 4);
-					shiftRow(W_i_1, 4);
-					xorArray(W_i_N, W_i_1, 4);
-					rcon[0] = rc[i/N];
-					xorArray(W_i_N, rcon, 4);
-				}
-				// Only in AES-256 mode
-				else if (N > 6 && (i % N) == 4) {
-					// TO DO
-				}
-				else {
-					xorArray(W_i_N, W_i_1, 4);
-				}
-				putWordIntoMatrix(m_expandedKey, W_i_N, m_expandedKeyWordSize, i);
-			}
-		}
-		std::cout << std::endl;
-		return FUNC_OK;
-	}
-
-	int AESEncryptor::encryptBlock(std::array<unsigned char, ARRAY_SIZE> &inputVector) {
-		if (m_keySize != 16) {
-			return INPUT_ERROR;
-		}
-		
-		unsigned char subKey[ARRAY_SIZE];
-		
-		//std::cout << "***** Round 0 *****"<< std::endl;
-		//std::cout << "Input data :"<< std::endl;
-		//printVector(inputVector);
-		
-		getSubMatrix(subKey, m_expandedKey, m_expandedKeyWordSize, 0);
-		//std::cout << "First subkey :" << std::endl;
-		//printVector(subKey, ARRAY_SIZE);
-
-		// Initial AddRoundKey
-		xorArray(inputVector, subKey);
-		//printVector(inputVector);
-
-		// Intermediate and final rounds (10 for now, 128-bit key)
-		for (int i = 1; i <= 10; i++) {
-			//std::cout << "***** Round " << int(i) << " *****" << std::endl;
-			subBytes(inputVector);
-			shiftRows(inputVector);
-			if (i < 10) {
-				mixColumns(inputVector);
-			}
-
-			//std::cout << "State Matrix" << std::endl;
-			//printVector(inputVector);
-			
-			getSubMatrix(subKey, m_expandedKey, m_expandedKeyWordSize, i*4);
-
-			//std::cout <<  "Subkey Round " << int(i) << std::endl;
-			//printSubkey(m_expandedKey, m_expandedKeyWordSize, i*4);
-
-			xorArray(inputVector, subKey);
-
-			//std::cout << "Final State Matrix Round " << int(i) << std::endl;
-			//printVector(inputVector);
-		}
-
 		return FUNC_OK;
 	}
 
