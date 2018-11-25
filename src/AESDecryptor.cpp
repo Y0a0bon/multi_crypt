@@ -12,7 +12,7 @@
 		m_rounds = 11;
 		m_expandedKeyWordSize = 4 * m_rounds;
 		m_expandedKey = new unsigned char[4 * m_expandedKeyWordSize];
-		//keyExpansionComplete();
+		keyExpansionComplete();
 	}
 
 	AESDecryptor::~AESDecryptor() {
@@ -20,6 +20,17 @@
 		delete m_expandedKey;
 	}
 
+	int AESDecryptor::getExpandedKeySize() {
+		return (4*int(m_expandedKeyWordSize));
+	}
+
+	int AESDecryptor::getSubkey(unsigned char *tmp, int ind) {
+		if (ind > 11) {
+			return INPUT_ERROR;
+		}
+		getSubMatrix(tmp, m_expandedKey, m_expandedKeyWordSize, ind*4);
+		return FUNC_OK;
+	}
 
 	int AESDecryptor::invSubBytes(std::array<unsigned char, ARRAY_SIZE> &inputVector) {
 		if (inputVector.empty())
@@ -130,6 +141,119 @@
 		return FUNC_OK;
 	}
 	
+	int AESDecryptor::subBytes(unsigned char *inputVector, int size) {
+		if (inputVector == nullptr)
+			return INPUT_ERROR;
+		for (int i = 0 ; i < size; i++){
+			inputVector[i] = sbox[inputVector[i]];
+		}
+		return FUNC_OK;
+	}
+
+	int AESDecryptor::shiftRow(unsigned char *inputVector, int size) {
+		unsigned char tmp[size];
+		int i;
+		for (i = 0; i < size; i++) {
+			tmp[i] = inputVector[(i+1) % size];
+		}
+		for (i = 0; i < size; i++) {
+			inputVector[i] = tmp[i];
+		}
+	}
+
+	// FIXME
+	int AESDecryptor::keyExpansionComplete() {
+		int N = m_keySize / 4;
+		unsigned char W_i_N[WORD_SIZE], W_i_1[WORD_SIZE], wordBuffer[WORD_SIZE];
+
+		unsigned char rc[11] = {0, 1, 2, 4, 8, 16, 32, 64, 128, 27, 54};
+		unsigned char rcon[WORD_SIZE] = {0, 0, 0, 0};
+		
+		for (int i = 0; i < m_expandedKeyWordSize; i++) {
+			// Round 0 is original key
+			if (i < N) {
+				getWordFromMatrix(wordBuffer, m_key, WORD_SIZE, i);
+				putWordIntoMatrix(m_expandedKey, wordBuffer, m_expandedKeyWordSize, i);
+			}
+			else {
+				// Compute W_(i-N) and W_(i-1)
+				getWordFromMatrix(W_i_N, m_expandedKey, m_expandedKeyWordSize, i - N);
+				getWordFromMatrix(W_i_1, m_expandedKey, m_expandedKeyWordSize, i - 1);
+				// Compute rcon_i
+				if ((i % N) == 0) {
+					subBytes(W_i_1, 4);
+					shiftRow(W_i_1, 4);
+					xorArray(W_i_N, W_i_1, 4);
+					rcon[0] = rc[i/N];
+					xorArray(W_i_N, rcon, 4);
+				}
+				// Only in AES-256 mode
+				else if (N > 6 && (i % N) == 4) {
+					// TO DO
+				}
+				else {
+					xorArray(W_i_N, W_i_1, 4);
+				}
+				putWordIntoMatrix(m_expandedKey, W_i_N, m_expandedKeyWordSize, i);
+			}
+		}
+		return FUNC_OK;
+	}
+
+	// FIXME
+	int AESDecryptor::equivalentCipherExpansion() {
+		for(int i = 0; i < m_expandedKeyWordSize; i++) {
+			//invMixColumns();
+		}
+		return NOT_IMPLEMENTED;	
+	}
+
+	int AESDecryptor::decryptBlock(std::array<unsigned char, ARRAY_SIZE> &inputVector) {
+		if (m_keySize != 16) {
+			return INPUT_ERROR;
+		}
+		
+		unsigned char subKey[ARRAY_SIZE];
+		
+		//std::cout << "***** Round 0 *****"<< std::endl;
+		//std::cout << "Input data :"<< std::endl;
+		//printVector(inputVector);
+		
+		getSubMatrix(subKey, m_expandedKey, m_expandedKeyWordSize, 40);
+		//std::cout << "First subkey :" << std::endl;
+		//printVector(subKey, ARRAY_SIZE);
+
+		// Initial AddRoundKey
+		xorArray(inputVector, subKey);
+		//printVector(inputVector);
+
+		// Intermediate and final rounds (10 for now, 128-bit key)
+		for (int i = 9; i >= 0; i--) {
+			//std::cout << "***** Round " << int(i) << " *****" << std::endl;
+			invShiftRows(inputVector);
+			invSubBytes(inputVector);
+
+			//std::cout << "State Matrix" << std::endl;
+			//printVector(inputVector);
+			
+			getSubMatrix(subKey, m_expandedKey, m_expandedKeyWordSize, i*4);
+
+			//std::cout <<  "Subkey Round " << int(i) << std::endl;
+			//printSubkey(m_expandedKey, m_expandedKeyWordSize, i*4);
+
+			xorArray(inputVector, subKey);
+
+			if (i > 0) {
+				invMixColumns(inputVector);
+			}
+
+			//std::cout << "Final State Matrix Round " << int(i) << std::endl;
+			//printVector(inputVector);
+		}
+
+		return FUNC_OK;
+	}
+
 	// FIXME Verify size of both inputs ?
 	int AESDecryptor::xorArray(std::array<unsigned char, ARRAY_SIZE> &inputVector, unsigned char *subKey){
 		for (int i = 0; i < ARRAY_SIZE; i++) {

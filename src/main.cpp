@@ -21,6 +21,7 @@ int test_AESDecryption();
 int test_AES_invSubBytes(AESDecryptor *aes_dec);
 int test_AES_invShiftRows(AESDecryptor *aes_dec);
 int test_AES_invMixColumns(AESDecryptor *aes_dec);
+int test_AES_keyExpansionComplete(AESDecryptor *aes_dec);
 int test_AES_decryptBlock(AESDecryptor *aes_dec);
 int test_RSA();
 
@@ -202,7 +203,8 @@ int test_AESDecryption()
 	test_AES_invShiftRows(aes_dec);
 	test_AES_invMixColumns(aes_dec);
 
-	//test_AES_decryptBlock(aes_dec);
+	test_AES_keyExpansionComplete(aes_dec);
+	test_AES_decryptBlock(aes_dec);
 	
 	return 0;
 }
@@ -260,6 +262,38 @@ int test_AES_invMixColumns(AESDecryptor *aes_dec) {
 		return 1;
 	}
 	return 0;
+}
+
+int test_AES_keyExpansionComplete(AESDecryptor *aes_dec) {
+	unsigned char expandedKey[16];
+	unsigned char output[16] = {0x28, 0x6D, 0xCC, 0x3B, 0xFD, 0xA4, 0xC0, 0x31, 0xDE, 0x24, 0xA4, 0x6F, 0xF8, 0x4A, 0xFE, 0x26};
+	
+	aes_dec->getSubkey(expandedKey, 10); // 11th key, so last subkey
+	
+	if(compareArray(expandedKey, output, 16)) {
+		std::cout << "Test passed : keyExpansion" << std::endl;
+		return 0;
+	}
+	else {
+		std::cout << "Test failed : keyExpansion" << std::endl;
+		return 1;
+	}
+}
+
+int test_AES_decryptBlock(AESDecryptor *aes_dec) {
+	std::array<unsigned char, 16> input = {0x29, 0x57, 0x40, 0x1A, 0xC3, 0x14, 0x22, 0x02, 0x50, 0x20, 0x99, 0xD7, 0x5F, 0xF6, 0xB3, 0x3A};
+	std::array<unsigned char, 16> output = {0x54, 0x4F, 0x4E, 0x20, 0x77, 0x6E, 0x69, 0x54, 0x6F, 0x65, 0x6E, 0x77, 0x20, 0x20, 0x65, 0x6F};
+	
+	aes_dec->decryptBlock(input);
+	
+	if(input == output) {
+		std::cout << "Test passed : decryptBlock" << std::endl;
+		return 0;
+	}
+	else {
+		std::cout << "Test failed : decryptBlock" << std::endl;
+		return 1;
+	}
 }
 
 // ********************* RSA Encryption tests *********************

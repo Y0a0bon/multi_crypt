@@ -18,6 +18,9 @@ class AESDecryptor
 	// Destructor
 	~AESDecryptor();
 
+	int getExpandedKeySize();
+	int getSubkey(unsigned char *tmp, int ind);
+
 	int invSubBytes(std::array<unsigned char, ARRAY_SIZE> &inputVector);
 	int invSubBytes(unsigned char *inputVector, int size);
 
@@ -28,6 +31,13 @@ class AESDecryptor
 	int invMixColumnsWord(unsigned char *multiplicator, unsigned char *word); 
 	int invMixColumns(std::array<unsigned char, ARRAY_SIZE> &inputVector);
 
+	int subBytes(unsigned char *inputVector, int size);
+	int shiftRow(unsigned char *inputVector, int size);
+
+	int keyExpansionComplete();
+	int equivalentCipherExpansion();
+
+	int decryptBlock(std::array<unsigned char, ARRAY_SIZE> &inputVector);
 
 	int xorArray(std::array<unsigned char, ARRAY_SIZE> &inputVector, unsigned char *subKey);
 	int xorArray(unsigned char *inputVector, unsigned char *subKey, int size);
