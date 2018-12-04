@@ -73,3 +73,16 @@
 		return 0;
 	}
 
+	bool compareArray(unsigned char *input, unsigned char *output, int size) {
+		bool same = true;
+		int i = 0;
+	
+		do {
+			if (input[i] != output[i]) {
+				same = false;
+			}
+			i++;
+		} while(same && i < size);
+		return same;
+	}	
+

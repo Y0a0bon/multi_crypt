@@ -5,6 +5,8 @@
 #include <cstring>
 #include <fstream>
 
+#include "AESTools.hpp"
+
 #define ARRAY_SIZE 16
 #define BLOCK_SIZE 128
 

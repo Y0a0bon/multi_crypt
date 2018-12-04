@@ -28,5 +28,6 @@
 	int printVectorLine(unsigned char *vector, int size);
 	int printMatrix(unsigned char *matrix, int columns, int lines);
 	int printSubkey(unsigned char *matrix, int columns, int ind);
+	bool compareArray(unsigned char *input, unsigned char *output, int size);
 
 #endif

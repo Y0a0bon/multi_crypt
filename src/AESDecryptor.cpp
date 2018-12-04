@@ -3,7 +3,6 @@
 #include <deque>
 #include <cstring>
 #include "AESDecryptor.hpp"
-#include "AESTools.hpp"
 
 	AESDecryptor::AESDecryptor(unsigned char *t_key, unsigned int t_keySize) : AESManipulator(t_key, t_keySize){
 		keyExpansionComplete();
