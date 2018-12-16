@@ -33,7 +33,7 @@
 	int AESEncryptor::subBytes(std::array<unsigned char, ARRAY_SIZE> &inputVector){
 		if (inputVector.empty())
 			return INPUT_ERROR;
-		for (int i = 0 ; i < inputVector.size(); i++){
+		for (unsigned int i = 0 ; i < inputVector.size(); i++){
 			inputVector[i] = sbox[inputVector[i]];
 		}
 		return FUNC_OK;
@@ -42,7 +42,7 @@
 	int AESEncryptor::subBytes(unsigned char *inputVector, int size) {
 		if (inputVector == nullptr)
 			return INPUT_ERROR;
-		for (int i = 0 ; i < size; i++){
+		for (unsigned int i = 0 ; i < (unsigned int) size; i++){
 			inputVector[i] = sbox[inputVector[i]];
 		}
 		return FUNC_OK;
@@ -57,9 +57,10 @@
 		for (i = 0; i < size; i++) {
 			inputVector[i] = tmp[i];
 		}
+		return FUNC_OK;
 	}
 
-	// Show off use od deque and std::array
+	// Show off use of deque and std::array
 	// But is it really necesary ?
 	int AESEncryptor::shiftRows(std::array<unsigned char, ARRAY_SIZE> &inputVector){
 		std::deque<unsigned char> tmp;
@@ -128,13 +129,13 @@
 	}
 
 	int AESEncryptor::keyExpansionComplete() {
-		int N = m_keySize / 4;
+		unsigned int N = m_keySize / 4;
 		unsigned char W_i_N[WORD_SIZE], W_i_1[WORD_SIZE], wordBuffer[WORD_SIZE];
 
 		unsigned char rc[11] = {0, 1, 2, 4, 8, 16, 32, 64, 128, 27, 54};
 		unsigned char rcon[WORD_SIZE] = {0, 0, 0, 0};
 		
-		for (int i = 0; i < m_expandedKeyWordSize; i++) {
+		for (unsigned int i = 0; i < m_expandedKeyWordSize; i++) {
 			// Round 0 is original key
 			if (i < N) {
 				getWordFromMatrix(wordBuffer, m_key, WORD_SIZE, i);

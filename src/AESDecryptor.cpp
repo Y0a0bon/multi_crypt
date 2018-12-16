@@ -26,7 +26,7 @@
 	int AESDecryptor::invSubBytes(std::array<unsigned char, ARRAY_SIZE> &inputVector) {
 		if (inputVector.empty())
 			return INPUT_ERROR;
-		for (int i = 0 ; i < inputVector.size(); i++){
+		for (unsigned int i = 0 ; i < inputVector.size(); i++){
 			inputVector[i] = rsbox[inputVector[i]];
 		}
 		return FUNC_OK;
@@ -150,17 +150,18 @@
 		for (i = 0; i < size; i++) {
 			inputVector[i] = tmp[i];
 		}
+		return FUNC_OK;
 	}
 
 	// FIXME
 	int AESDecryptor::keyExpansionComplete() {
-		int N = m_keySize / 4;
+		unsigned int N = m_keySize / 4;
 		unsigned char W_i_N[WORD_SIZE], W_i_1[WORD_SIZE], wordBuffer[WORD_SIZE];
 
 		unsigned char rc[11] = {0, 1, 2, 4, 8, 16, 32, 64, 128, 27, 54};
 		unsigned char rcon[WORD_SIZE] = {0, 0, 0, 0};
 		
-		for (int i = 0; i < m_expandedKeyWordSize; i++) {
+		for (unsigned int i = 0; i < m_expandedKeyWordSize; i++) {
 			// Round 0 is original key
 			if (i < N) {
 				getWordFromMatrix(wordBuffer, m_key, WORD_SIZE, i);
@@ -193,7 +194,7 @@
 
 	// FIXME
 	int AESDecryptor::equivalentCipherExpansion() {
-		for(int i = 0; i < m_expandedKeyWordSize; i++) {
+		for(unsigned int i = 0; i < m_expandedKeyWordSize; i++) {
 			//invMixColumns();
 		}
 		return NOT_IMPLEMENTED;	

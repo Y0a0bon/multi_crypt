@@ -129,11 +129,11 @@ int test_AESEncryption()
 	std::cout << "Testing AES encryption ..." << std::endl;
 	unsigned char key[16] = {84, 115, 32, 103, 104, 32, 75, 32, 97, 109, 117, 70, 116, 121, 110, 117};
 	AESEncryptor *aes_enc = new AESEncryptor(key, 16);
-	
-	test_AES_subBytes(aes_enc);
 
 	test_AES_getWordFromMatrix(aes_enc);
 	test_AES_putWordIntoMatrix(aes_enc);
+	
+	test_AES_subBytes(aes_enc);
 	
 	test_AES_shiftRows(aes_enc);
 	test_AES_mixColumns(aes_enc);

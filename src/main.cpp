@@ -2,8 +2,8 @@
 #include <string>
 #include <cmath>
 
-#include "RSA_algorithm.hpp"
-#include "RSA_key.hpp"
+//#include "RSA_algorithm.hpp"
+//#include "RSA_key.hpp"
 #include "AESEncryptorTest.hpp"
 #include "AESDecryptorTest.hpp"
 #include "AESTools.hpp"
@@ -21,6 +21,7 @@ int main()
 
 int test_RSA()
 {
+	/*
 	std::string str = "hello";
 	unsigned long seq = 41245;
 	unsigned long cipher = 0;
@@ -32,6 +33,6 @@ int test_RSA()
 	
 	unsigned long res = rk.get_n();
 	std::cout <<  "modulo n is " << res << std::endl;
-	
-    	return 0;
+	*/
+    	return NOT_IMPLEMENTED;
 }

@@ -10,7 +10,15 @@ TARGET := bin/runner
 SRCEXT := cpp
 SOURCES := $(shell find $(SRCDIR) -type f -name *.$(SRCEXT))
 OBJECTS := $(patsubst $(SRCDIR)/%,$(BUILDDIR)/%,$(SOURCES:.$(SRCEXT)=.o))
-CFLAGS := -g # -Wall
+CFLAGS := -g -D_FORTIFY_SOURCE=2 -D_GLIBCXX_ASSERTIONS -fasynchronous-unwind-tables -fexceptions
+CFLAGS += -fstack-protector-strong -grecord-gcc-switches -O2 -pipe -Wall -Werror=format-security
+CFLAGS += -Werror=implicit-function-declaration -Wl,-z,defs -Wl,-z,now -Wl,-z,relro
+CFLAGS += -fwrapv -fno-strict-aliasing -flto -mstackrealign # Additional
+#CFLAGS += -fpie i-Wl,-pie # for executables, full ASLR 
+#CFLAGS += -fpic -shared # for shared libraries
+#CFLAGS += -fplugin=annobin # for hardening quality control
+#CFLAGS += -fstack-clash-protection -mcet -fcf-protection # unknown
+
 LIB := -pthread -L lib #-lboost_thread-mt -lboost_filesystem-mt -lboost_system-mt
 INC := -I include
 
