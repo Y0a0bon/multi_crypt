@@ -35,8 +35,6 @@ class AESEncryptor : public AESManipulator
 	
 	int encryptBlock(std::array<unsigned char, ARRAY_SIZE> &inputVector);
 
-	void encrypt(std::ifstream t_inputStream, std::ofstream t_outputStream);
-
 	private :
 
 };

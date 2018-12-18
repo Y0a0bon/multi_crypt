@@ -36,8 +36,6 @@ class AESManipulator {
 
 	protected :
 	// Attributes
-	std::ifstream m_inputStream;
-	std::ofstream m_outputStream;
 	unsigned char *m_key;
 	unsigned int m_keySize;
 	unsigned char *m_expandedKey;
