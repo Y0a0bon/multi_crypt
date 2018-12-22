@@ -30,4 +30,8 @@
 	int printSubkey(unsigned char *matrix, int columns, int ind);
 	bool compareArray(unsigned char *input, unsigned char *output, int size);
 
+	// Random number as unsigned char
+	//int getRand(unsigned char *buf, unsigned int length, int custom_seed);
+	int getRand(unsigned char *buf, unsigned int length);
+
 #endif

@@ -22,6 +22,8 @@ class AESCipherEncryptor : public AESEncryptor
 	int doCipher(std::ifstream t_inputStream, std::ofstream t_outputStream);
 	int doCipherCBC(std::ifstream t_inputStream, std::ofstream t_outputStream);
 
+	int copyByteBuffer(std::array<unsigned char, ARRAY_SIZE> dest, unsigned char *src) {
+
 	private :
 	// Attributes
 	std::string m_mode;
